@@ -3,9 +3,9 @@
 #
 from __future__ import unicode_literals
 
-from alex.components.nlg.tectotpl.core.block import Block
-from alex.components.nlg.tectotpl.core.exception import LoadingException
-from alex.components.nlg.tectotpl.core.util import first
+from pytreex.core.block import Block
+from pytreex.core.exception import LoadingException
+from pytreex.core.util import first
 
 __author__ = "Ondřej Dušek"
 __date__ = "2012"

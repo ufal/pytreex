@@ -5,11 +5,11 @@
 #
 from __future__ import unicode_literals
 
-from alex.components.nlg.tectotpl.core.block import Block
-from alex.components.nlg.tectotpl.core.exception import LoadingException
+from pytreex.core.block import Block
+from pytreex.core.exception import LoadingException
 import re
-from alex.components.nlg.tectotpl.core.util import first
-from alex.components.nlg.tectotpl.core.log import log_warn
+from pytreex.core.util import first
+from pytreex.core.log import log_warn
 
 __author__ = "Ondřej Dušek"
 __date__ = "2012"

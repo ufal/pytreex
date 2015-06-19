@@ -5,8 +5,8 @@
 #
 from __future__ import unicode_literals
 
-from alex.components.nlg.tectotpl.core.block import Block
-from alex.components.nlg.tectotpl.core.exception import LoadingException, RuntimeException
+from pytreex.core.block import Block
+from pytreex.core.exception import LoadingException, RuntimeException
 import copy
 
 __author__ = "Ondřej Dušek"

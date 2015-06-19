@@ -4,14 +4,82 @@
 # Classes related to Treex runs
 #
 from __future__ import unicode_literals
+import getopt
+import yaml
 import sys
-import codecs
-from alex.components.nlg.tectotpl.core import ScenarioException
-from alex.components.nlg.tectotpl.core.log import log_info
+from pytreex.core import ScenarioException
+from pytreex.core.log import log_info
 from io import StringIO
 
 __author__ = "Ondřej Dušek"
 __date__ = "2012"
+
+
+class Run(object):
+    "Main class, used to parse a scenario and run it."
+
+    JOB_NAME_PREFIX = 'treex-'
+
+    def __init__(self, opts=[]):
+        """Initialize the main class by parsing the command arguments
+        and creating a scenario object."""
+        optlist, args = getopt.getopt(opts, 'hj:')
+        # no options and no arguments: display usage
+        self.help = not optlist and not args
+        self.jobs = 0
+        for optname, optarg in optlist:
+            if optname == '-h':
+                self.help = True  # explicit usage display
+            elif optname == '-j':
+                self.jobs = int(optarg)
+        # store options (not needed?)
+        self.optlist = optlist
+        # parse scenario, if given
+        self.scenario = args and Scenario(args.pop(0)) or None
+        # store input files
+        self.input_files = args
+
+    def run(self):
+        "Run according to the options"
+        # display help and exit
+        if self.help:
+            self.print_usage()
+            return
+        # execute on cluster
+        if self.jobs:
+            self.run_on_cluster()
+            return
+        # run the scenario
+        self.scenario.load_blocks()
+        for file_name in self.input_files:
+            self.scenario.apply_to(file_name)
+
+    def run_on_cluster(self):
+        # split input files for different jobs
+        job_files = [self.input_files[i::self.jobs] for i in xrange(self.jobs)]
+        jobs = [Job(name=self.JOB_NAME_PREFIX + self.scenario.name)]
+        work_dir = jobs[0].work_dir
+        for jobnum in xrange(1, self.jobs):
+            jobs.append(Job(name=self.JOB_NAME_PREFIX + self.scenario.name +
+                            '-' + str(jobnum).zfill(2), work_dir=work_dir))
+        log_info('Creating jobs ...')
+        for job, files in zip(jobs, job_files):
+            job.header += "from treex.core.run import Run\n"
+            args = [self.scenario.file_path] + \
+                    [os.path.abspath(file_path) for file_path in files]
+            job.code = "run = Run(" + str(args) + ")\nrun.run()\n"
+        log_info('Submitting jobs ...')
+        for job in jobs:
+            job.submit()
+        log_info('Waiting for jobs ...')
+        for job in jobs:
+            job.wait(poll_delay=10)
+        log_info('All jobs done.')
+
+    def print_usage(self):
+        print """\
+        Usage: ./treex.py [-h] [-j jobs] [scenario file1 [file2...]]
+        """
 
 
 class Scenario(object):
@@ -40,7 +108,7 @@ class Scenario(object):
                 class_subpath += '.'
             else:
                 class_subpath, class_name = '', block_data["block"]
-            class_package = 'alex.components.nlg.tectotpl.block.' \
+            class_package = 'pytreex.block.' \
                     + class_subpath + class_name.lower()
             log_info('Loading block ' + str(block_no) + '/' +
                      str(len(self.scenario_data)) + ': ' + class_name)

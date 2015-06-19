@@ -5,14 +5,14 @@
 #
 
 from __future__ import unicode_literals
-from alex.components.nlg.tectotpl.core.exception import RuntimeException
-from alex.components.nlg.tectotpl.core.log import log_warn
+from pytreex.core.exception import RuntimeException
+from pytreex.core.log import log_warn
 from collections import deque
 import types
 import re
 import sys
 import inspect
-from alex.components.nlg.tectotpl.core.util import as_list
+from pytreex.core.util import as_list
 
 
 __author__ = "Ondřej Dušek"
@@ -45,17 +45,16 @@ class Node(object):
                                         self.get_attr_list(safe=True)):
             attr, att_type = attr_type
             # initialize lists and dicts, perform simple type coercion on other
-            if att_type == types.DictType:
+            if isinstance(att_type, types.DictType):
                 setattr(self, safe_attr,
                         data.get(attr) is not None and dict(data[attr]) or {})
-            elif att_type == types.ListType:
+            elif isinstance(att_type, types.ListType):
                 setattr(self, safe_attr,
                         data.get(attr) is not None and list(data[attr]) or [])
-            elif att_type == types.BooleanType:
+            elif isinstance(att_type, types.BooleanType):
                 # booleans need to be prepared for values such as '1' and '0'
                 setattr(self, safe_attr,
-                        data.get(attr) is not None and
-                            bool(int(data[attr])) or False)
+                        data.get(attr) is not None and bool(int(data[attr])) or False)
             else:
                 # other types (int,str): be prepared for values that evaluate
                 # to false -- cannot use the and-or trick
@@ -74,7 +73,7 @@ class Node(object):
             [self.create_child(data=child_data)
              for child_data in data['children']]
 
-    def  __generate_id(self):
+    def __generate_id(self):
         "Generate successive IDs for all nodes"
         Node.__lastId += 1
         ret = re.sub(r'^.*\.', '', self.__class__.__name__.lower()) + '-node-'
@@ -155,7 +154,7 @@ class Node(object):
         if not hasattr(myclass, '__ref_attr_cache'):
             myclass.__ref_attr_cache = {}
         # Not in cache -- must compute
-        if not split_nested in self.__class__.__ref_attr_cache:
+        if split_nested not in self.__class__.__ref_attr_cache:
             mybases = inspect.getmro(myclass)
             attrs = [attr for cls in mybases if hasattr(cls, 'ref_attrib') for attr in cls.ref_attrib]
             if not split_nested:
@@ -198,7 +197,7 @@ class Node(object):
         self.__track_backref(name, value)
         # any nested attributes
         if '/' in name:
-            #prepare the attribute as a dict
+            # prepare the attribute as a dict
             attr, path = name.split('/', 1)
             path = path.split('/')
             obj = getattr(self, Node.__safe_name(attr))
@@ -207,10 +206,10 @@ class Node(object):
                 setattr(self, Node.__safe_name(attr), obj)
             # build dict path up to the last level
             for step in path[:-1]:
-                if not step in obj:
+                if step not in obj:
                     obj[step] = {}
                 obj = obj[step]
-            #set the value
+            # set the value
             obj[path[-1]] = value
         # plain attributes
         else:
@@ -267,8 +266,8 @@ class Node(object):
         return self._process_switches([desc for child in self.__children
                                        for desc in
                                        child.__descs_and_self_unsorted()],
-                                       add_self, ordered, preceding_only,
-                                       following_only)
+                                      add_self, ordered, preceding_only,
+                                      following_only)
 
     def get_children(self, add_self=False, ordered=False,
                      preceding_only=False, following_only=False):
@@ -564,8 +563,7 @@ class EffectiveRelations(object):
                                      preceding_only, following_only)
         # my own effective children
         # (I am their only parent) & shared effective children
-        echildren = self.__get_my_own_echildren() + \
-                    self.__get_shared_echildren()
+        echildren = self.__get_my_own_echildren() + self.__get_shared_echildren()
         # final filtering
         return self._process_switches(echildren, add_self, ordered,
                                       preceding_only, following_only)
@@ -774,7 +772,7 @@ class T(Node, Ordered, EffectiveRelations, InClause):
     def remove_aux_anodes(self, to_remove):
         "Remove an auxiliary a-node from the list"
         self.aux_anodes = [anode for anode in self.aux_anodes
-                           if not anode in to_remove]
+                           if anode not in to_remove]
         if not self.aux_anodes:
             self.aux_anodes = None
 

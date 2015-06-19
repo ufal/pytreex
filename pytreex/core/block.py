@@ -4,7 +4,7 @@
 # Common ancestor for Treex blocks
 #
 from __future__ import unicode_literals
-from alex.components.nlg.tectotpl.core.exception import RuntimeException
+from pytreex.core.exception import RuntimeException
 
 __author__ = "Ondřej Dušek"
 __date__ = "2012"

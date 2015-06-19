@@ -6,13 +6,13 @@
 from __future__ import absolute_import
 from __future__ import unicode_literals
 
-from alex.components.nlg.tectotpl.core.block import Block
-from alex.components.nlg.tectotpl.core import Document
+from pytreex.core.block import Block
+from pytreex.core import Document
 
-from alex.components.nlg.tectotpl.core.exception import LoadingException
-from alex.components.nlg.tectotpl.core.util import file_stream
+from pytreex.core.exception import LoadingException
+from pytreex.core.util import file_stream
 import re
-from alex.components.nlg.tectotpl.core.log import log_info
+from pytreex.core.log import log_info
 
 __author__ = "Ondřej Dušek"
 __date__ = "2013"

@@ -5,10 +5,10 @@
 #
 from __future__ import unicode_literals
 
-from alex.components.nlg.tectotpl.core.block import Block
-from alex.components.nlg.tectotpl.core.exception import LoadingException
+from pytreex.core.block import Block
+from pytreex.core.exception import LoadingException
 import re
-from alex.components.nlg.tectotpl.tool.lexicon.cs import Lexicon
+from pytreex.tool.lexicon.cs import Lexicon
 
 __author__ = "Ondřej Dušek"
 __date__ = "2012"

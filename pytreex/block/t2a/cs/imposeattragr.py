@@ -6,9 +6,9 @@
 from __future__ import unicode_literals
 
 import re
-from alex.components.nlg.tectotpl.block.t2a.imposeagreement import \
+from pytreex.block.t2a.imposeagreement import \
         ImposeAgreement
-from alex.components.nlg.tectotpl.tool.lexicon.cs import Lexicon
+from pytreex.tool.lexicon.cs import Lexicon
 
 __author__ = "Ondřej Dušek"
 __date__ = "2012"

@@ -5,10 +5,10 @@
 #
 from __future__ import unicode_literals
 
-from alex.components.nlg.tectotpl.core.block import Block
-from alex.components.nlg.tectotpl.core.exception import LoadingException
-from alex.components.nlg.tectotpl.tool.ml.model import Model
-from alex.components.nlg.tectotpl.core.util import first
+from pytreex.core.block import Block
+from pytreex.core.exception import LoadingException
+from pytreex.tool.ml.model import Model
+from pytreex.core.util import first
 import re
 import os.path
 

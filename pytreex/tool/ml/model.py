@@ -11,17 +11,17 @@ Classification models using scikit-learn. The main objects here are Model
 and SplitModel.
 """
 
-from alex.components.nlg.tectotpl.core.util import file_stream
-from alex.components.nlg.tectotpl.core.log import log_info
+from pytreex.core.util import file_stream
+from pytreex.core.log import log_info
 # Sklearn renamed zero_one_loss in new version.
 try:
     from sklearn.metrics import zero_one_loss
 except:
     from sklearn.metrics import zero_one_loss as zero_one_score
-from alex.components.nlg.tectotpl.tool.ml.dataset import DataSet
+from pytreex.tool.ml.dataset import DataSet
 from sklearn.dummy import DummyClassifier
-from alex.components.nlg.tectotpl.core.exception import RuntimeException
-from alex.components.nlg.tectotpl.tool.cluster import Job
+from pytreex.core.exception import RuntimeException
+from pytreex.tool.cluster import Job
 import numpy as np
 import pickle
 import marshal
@@ -212,9 +212,9 @@ class Model(AbstractModel):
                 "model.train('" + train_file + "', encoding='" + \
                 encoding + "')\n" \
                 "model.save_to_file('" + model_file + "')\n"
-        job.header += "from alex.components.nlg.tectotpl.tool.ml.model import Model\n" + \
+        job.header += "from pytreex.tool.ml.model import Model\n" + \
                 "import pickle\n" + \
-                "from alex.components.nlg.tectotpl.core.util import file_stream\n"
+                "from pytreex.core.util import file_stream\n"
         return job, model_file
 
     def train_on_data(self, train):
