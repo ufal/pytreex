@@ -50,7 +50,7 @@ class Block(object):
         otherwise raise an error.
         """
         processed = False
-        for layer in 'a', 't', 'n', 'p':
+        for layer in 'a', 't', 'n', 'p', 'amr':
             processed = processed or self.__try_process_layer(zone, layer)
 
     def __try_process_layer(self, zone, layer):
