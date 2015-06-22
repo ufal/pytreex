@@ -12,6 +12,7 @@ import types
 import re
 import sys
 import inspect
+import unidecode
 from pytreex.core.util import as_list
 
 
@@ -246,6 +247,10 @@ class Node(object):
             ret[attr] = as_list(value)
         return ret
 
+    def get_referencing_nodes(self, attr_name):
+        return [self.document.get_node_by_id(node_id)
+                for node_id in self.document.get_backref(attr_name, self.id)]
+
     def remove_reference(self, ref_type, refd_id):
         "Remove the reference of the given type to the given node."
         # handle alignment separately
@@ -384,11 +389,11 @@ class Node(object):
 
     def __eq__(self, other):
         "Node comparison by id"
-        return self.id == other.id
+        return other is not None and self.id == other.id
 
     def __ne__(self, other):
         "Node comparison by id"
-        return self.id != other.id
+        return other is None or self.id != other.id
 
     def __lt__(self, other):
         "Node ordering is only implemented in Ordered"
@@ -1141,20 +1146,15 @@ class AMR(Node, Ordered):
         "Constructor"
         if data:
             self._data_from_tamr(data)
-        Node.__init__(self, data, parent, zone)
+        # first keep parent as none, then set it manually (wait till other attributes are
+        # filled and update the variable name as well)
+        Node.__init__(self, data, None, zone)
+        self.parent = parent
+        # for root, remember which variables are taken in descendants, update upon parent setting
         if self.is_root:
-            # make a map of highest used variable numbers for all letters
             self.vars = {}
             for node in self.get_descendants():
-                if not node.varname:  # skip coref and constant nodes
-                    continue
-                num = 1
-                letter = node.varname[0]
-                if len(node.varname) > 1:
-                    num = int(node.varname[1:])
-                hinum = self.vars.get(letter, -1)
-                if num > hinum:
-                    self.vars[letter] = num
+                self._allocate_var(node)
 
     @property
     def coref_nodes(self):
@@ -1163,6 +1163,98 @@ class AMR(Node, Ordered):
     @coref_nodes.setter
     def coref_nodes(self, new_coref):
         self.set_deref_attr('coref.rf', new_coref)
+
+    @property
+    def src_tnode(self):
+        return self.get_deref_attr('src_tnode.rf')
+
+    @src_tnode.setter
+    def src_tnode(self, value):
+        self.set_deref_attr('src_tnode.rf', value)
+
+    @Node.parent.setter
+    def parent(self, value):
+        # free old variable name when removing from a tree, keep track of old tree
+        oldroot = None
+        if self.parent is not None and value is not None and value.root != self.root:
+            oldroot = self.root
+            self.root._free_var(self)
+        # super -- set the parent
+        Node.parent.fset(self, value)
+        # update variable name for the new tree (if moving/creating new node, not on data loading)
+        if self.parent is not None and self.root != oldroot:
+            if oldroot is not None or (self.varname == 'auto'
+                                       or self.varname is None and self.nodetype == 'var'):
+                self.set_auto_var()
+            else:
+                self.root._allocate_var(self)
+
+    def remove(self):
+        self.root._free_var(self)
+        # super -- do the actual removal
+        Node.remove(self)
+
+    def set_auto_var(self):
+        """Compute automatic variable name (using the first free number for the 1st letter
+        of the given concept."""
+        if self.coref_nodes:
+            coref = self.coref_nodes
+            self.varname = coref[0].varname
+        elif self.varname or self.nodetype == 'var' or not self.concept.startswith('"'):
+            # for concepts, just overwrite the variables
+            letter = self.get_letter_for_concept()
+            num = self.root._allocate_var_for_letter(letter)
+            if num > 1:
+                letter += str(num)
+            self.varname = letter
+            # update coreferencing nodes
+            coref = self.get_referencing_nodes('coref.rf')
+            if coref:
+                for coref_node in coref:
+                    coref_node.varname = letter
+
+    def get_letter_for_concept(self):
+        """Get letter for AMR concept (usually the first letter)."""
+        c = self.concept
+        c = unidecode.unidecode(c)
+        c = re.sub(r'[^a-zA-Z]', '', c)
+        c = c.lower()
+        if not c:
+            return "X"
+        return c[0]
+
+    def _split_varname(self):
+        """Split an AMR variable name into the letter and the number (use 1 if no number)."""
+        if self.varname is None:
+            return None, None
+        num = 1
+        letter = self.varname[0]
+        if len(self.varname) > 1:
+            num = int(self.varname[1:])
+        return letter, num
+
+    def _free_var(self, removed_node):
+        if removed_node.varname in [None, 'auto']:
+            return
+        letter, num = removed_node._split_varname()
+        if self.vars[letter] == num:
+            self.vars[letter] -= 1
+            if self.vars[letter] == 0:
+                del self.vars[letter]
+
+    def _allocate_var_for_letter(self, letter):
+        hinum = self.vars.get(letter, 0)
+        hinum += 1
+        self.vars[letter] = hinum
+        return hinum
+
+    def _allocate_var(self, added_node):
+        if added_node.varname in [None, 'auto']:
+            return
+        letter, num = added_node._split_varname()
+        hinum = self.vars.get(letter, -1)
+        if num > hinum:
+            self.vars[letter] = num
 
     def _data_from_tamr(self, data):
         """Convert into "true" AMR from TAMR-stored YAML data (used in constructor)."""
