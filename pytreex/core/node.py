@@ -1156,7 +1156,16 @@ class AMR(Node, Ordered):
                 if num > hinum:
                     self.vars[letter] = num
 
+    @property
+    def coref_nodes(self):
+        return self.get_deref_attr('coref.rf')
+
+    @coref_nodes.setter
+    def coref_nodes(self, new_coref):
+        self.set_deref_attr('coref.rf', new_coref)
+
     def _data_from_tamr(self, data):
+        """Convert into "true" AMR from TAMR-stored YAML data (used in constructor)."""
         if 'wild' in data and 'modifier' in data['wild']:
             data['modifier'] = data['wild']['modifier']
             del data['wild']['modifier']
@@ -1181,6 +1190,7 @@ class AMR(Node, Ordered):
             log_warn('Coref-type node has no coreference: ' . str(data))
 
     def data_to_tamr(self, data):
+        """Convert back from AMR into TAMR-stored YAML (used by YAML writer)."""
         if 'varname' in data and 'concept'in data:
             # concepts
             data['t_lemma'] = data['varname'] + '/' + data['concept']
@@ -1197,6 +1207,8 @@ class AMR(Node, Ordered):
             del data['varname']
             del data['coref.rf']
         if 'modifier' in data:
+            if 'wild' not in data:
+                data['wild'] = {}
             data['wild']['modifier'] = data['modifier']
             del data['modifier']
         if 'nodetype' in data and data['nodetype'] != 'root':
