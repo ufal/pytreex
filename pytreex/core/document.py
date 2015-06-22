@@ -200,9 +200,13 @@ class Zone(object):
         self.language = data.get('language') or language
         self.selector = data.get('selector') or selector or ''
         self.sentence = data.get('sentence')
-        for layer in ('t', 'a', 'n', 'p'):
+        for layer in ('t', 'a', 'n', 'p', 'amr'):
             if layer + 'tree' in data:
-                self.create_tree(layer, data[layer + 'tree'])
+                # hacking around Treex TAMR (storing AMRs in a t-layer under a different selector)
+                self.create_tree('amr'
+                                 if self.selector.startswith('amr') and layer == 't'
+                                 else layer,
+                                 data[layer + 'tree'])
 
     @property
     def bundle(self):
@@ -240,10 +244,10 @@ class Zone(object):
             del data['nodes']
         if data is None:
             data = {'id': layer + '-node-' + self.language_and_selector +
-                    ('-s' + str(self.bundle.ord) if  self.bundle else '') +
+                    ('-s' + str(self.bundle.ord) if self.bundle else '') +
                     '-root'}
         # call the appropriate constructor of the corresponding
-        # class from pytreex.core.node (A, T, N, P)
+        # class from pytreex.core.node (A, T, N, P, AMR)
         node_type = getattr(pytreex.core.node, layer.upper())
         # create the root
         root = node_type(data=data, zone=self)
@@ -275,6 +279,10 @@ class Zone(object):
     def has_ptree(self):
         "Return true if this zone has a p-tree."
         return hasattr(self, 'ptree')
+
+    def has_amrtree(self):
+        "Return true if this zone has an AMR tree."
+        return hasattr(self, 'amrtree')
 
     @property
     def ttree(self):
@@ -332,6 +340,17 @@ class Zone(object):
             raise RuntimeException('Can\'t create a p-tree: tree exists')
         self.__ptree = value
 
+    @property
+    def amrtree(self):
+        "Direct access to AMR tree (will raise an exception if the tree does not exist)."
+        return self.__amrtree
+
+    @amrtree.setter
+    def amrtree(self, value):
+        if self.has_amrtree():
+            raise RuntimeException('Can\'t create AMR tree: tree exists')
+        self.__amrtree = value
+
     def create_ttree(self):
         "Create a tree on the t-layer"
         return self.create_tree('t')
@@ -347,6 +366,10 @@ class Zone(object):
     def create_ptree(self):
         "Create a tree on the p-layer"
         return self.create_tree('p')
+
+    def create_amrtree(self):
+        "Create an AMR tree."
+        return self.create_tree('amr')
 
     @property
     def language_and_selector(self):

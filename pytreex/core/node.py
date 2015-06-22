@@ -45,13 +45,13 @@ class Node(object):
                                         self.get_attr_list(safe=True)):
             attr, att_type = attr_type
             # initialize lists and dicts, perform simple type coercion on other
-            if isinstance(att_type, types.DictType):
+            if att_type == types.DictType:
                 setattr(self, safe_attr,
                         data.get(attr) is not None and dict(data[attr]) or {})
-            elif isinstance(att_type, types.ListType):
+            elif att_type == types.ListType:
                 setattr(self, safe_attr,
                         data.get(attr) is not None and list(data[attr]) or [])
-            elif isinstance(att_type, types.BooleanType):
+            elif att_type == types.BooleanType:
                 # booleans need to be prepared for values such as '1' and '0'
                 setattr(self, safe_attr,
                         data.get(attr) is not None and bool(int(data[attr])) or False)
@@ -1120,9 +1120,84 @@ class P(Node):
               ('coindex', types.UnicodeType), ('edgelabel', types.UnicodeType),
               ('form', types.UnicodeType), ('lemma', types.UnicodeType),
               ('tag', types.UnicodeType), ('phrase', types.UnicodeType),
-              ('functions', types.UnicodeType), ]
+              ('functions', types.ListType), ]
     ref_attrib = []
 
     def __init__(self, data=None, parent=None, zone=None):
         "Constructor"
         Node.__init__(self, data, parent, zone)
+
+
+class AMR(Node, Ordered):
+    "Representing an AMR type"
+
+    attrib = [('varname', types.UnicodeType), ('nodetype', types.UnicodeType),
+              ('modifier', types.UnicodeType), ('concept', types.UnicodeType),
+              ('src_tnode.rf', types.UnicodeType), ('coref.rf', types.ListType)]
+
+    ref_attrib = ['src_tnode.rf', 'coref.rf']
+
+    def __init__(self, data=None, parent=None, zone=None):
+        "Constructor"
+        if data:
+            self._data_from_tamr(data)
+        Node.__init__(self, data, parent, zone)
+        if self.is_root:
+            # make a map of highest used variable numbers for all letters
+            self.vars = {}
+            for node in self.get_descendants():
+                if not node.varname:  # skip coref and constant nodes
+                    continue
+                num = 1
+                letter = node.varname[0]
+                if len(node.varname) > 1:
+                    num = int(node.varname[1:])
+                hinum = self.vars.get(letter, -1)
+                if num > hinum:
+                    self.vars[letter] = num
+
+    def _data_from_tamr(self, data):
+        if 'wild' in data and 'modifier' in data['wild']:
+            data['modifier'] = data['wild']['modifier']
+            del data['wild']['modifier']
+        if 't_lemma' in data:
+            m = re.match(r'^([a-zA-Z][0-9]*)/(.*)$', data['t_lemma'])
+            if m:
+                data['varname'] = m.group(1)
+                data['concept'] = m.group(2)
+                data['nodetype'] = 'var'
+            else:
+                m = re.match(r'^([a-zA-Z][0-9]*)$', data['t_lemma'])
+                if m:
+                    data['varname'] = m.group(1)
+                    data['nodetype'] = 'coref'
+                else:
+                    data['concept'] = data['t_lemma']
+                    data['nodetype'] = 'const'
+            del data['t_lemma']
+        if 'coref_text.rf' in data:
+            data['coref.rf'] = data['coref_text.rf']
+        if data['nodetype'] == 'coref' and 'coref.rf' not in data:
+            log_warn('Coref-type node has no coreference: ' . str(data))
+
+    def data_to_tamr(self, data):
+        if 'varname' in data and 'concept'in data:
+            # concepts
+            data['t_lemma'] = data['varname'] + '/' + data['concept']
+            del data['varname']
+            del data['concept']
+        elif 'concept' in data:
+            # constants
+            data['t_lemma'] = data['concept']
+            del data['concept']
+        else:
+            # coreference
+            data['t_lemma'] = data['varname']
+            data['coref_text.rf'] = data['coref.rf']
+            del data['varname']
+            del data['coref.rf']
+        if 'modifier' in data:
+            data['wild']['modifier'] = data['modifier']
+            del data['modifier']
+        if 'nodetype' in data and data['nodetype'] != 'root':
+            del data['nodetype']
