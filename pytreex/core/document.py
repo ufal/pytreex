@@ -4,6 +4,7 @@
 # Classes related to Treex documents, bundles and zones
 #
 from __future__ import unicode_literals
+from copy import copy
 from pytreex.core.exception import RuntimeException
 import pytreex.core.node
 
@@ -103,6 +104,14 @@ class Document(object):
                 self.__backref[attr_name][target_id].remove(source_id)
             except:  # if the reference is not there, we don't care
                 pass
+
+    def get_backref(self, attr_name, target_id):
+        """Return IDs of nodes referencing the given node through the given attribute."""
+        if attr_name not in self.__backref:
+            return []
+        if target_id not in self.__backref[attr_name]:
+            return []
+        return copy(self.__backref[attr_name][target_id])
 
     def create_bundle(self, data=None):
         """\
