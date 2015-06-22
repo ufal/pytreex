@@ -7,6 +7,7 @@ from __future__ import unicode_literals
 import getopt
 import yaml
 import sys
+import os.path
 from pytreex.core import ScenarioException
 from pytreex.core.log import log_info
 from io import StringIO
@@ -52,7 +53,7 @@ class Run(object):
         # run the scenario
         self.scenario.load_blocks()
         for file_name in self.input_files:
-            self.scenario.apply_to(file_name)
+            self.scenario.apply_to(filename=file_name)
 
     def run_on_cluster(self):
         # split input files for different jobs
@@ -65,8 +66,7 @@ class Run(object):
         log_info('Creating jobs ...')
         for job, files in zip(jobs, job_files):
             job.header += "from treex.core.run import Run\n"
-            args = [self.scenario.file_path] + \
-                    [os.path.abspath(file_path) for file_path in files]
+            args = [self.scenario.file_path] + [os.path.abspath(file_path) for file_path in files]
             job.code = "run = Run(" + str(args) + ")\nrun.run()\n"
         log_info('Submitting jobs ...')
         for job in jobs:
@@ -86,17 +86,28 @@ class Scenario(object):
     """This represents a scenario, i.e. a sequence of
     blocks to be run on the data"""
 
-    def __init__(self, config):
+    def __init__(self, scenario_file=None, config=None, global_args={}):
         "Initialize (parse YAML scenario from a file)"
-        # initialize global arguments
-        self.global_args = config.get('global_args', {})
-        self.scenario_data = config.get('scenario')
-        self.data_dir = config.get('data_dir')
+        if scenario_file is not None:
+            # initialize global arguments
+            self.global_args = global_args
+            self.file_path = os.path.abspath(scenario_file)
+            self.name = os.path.splitext(os.path.basename(scenario_file))[0]
+            # parse scenario
+            f = open(scenario_file)
+            self.scenario_data = yaml.load(f)
+            f.close()
+        elif config is not None:
+            self.global_args = config.get('global_args', {})
+            self.scenario_data = config.get('scenario')
+            self.data_dir = config.get('data_dir')
+            if not self.data_dir:
+                raise ScenarioException('Data directory must be set')
+        else:
+            raise ScenarioException('Config or scenario file must be set!')
         # check whether scenario contains blocks
         if not self.scenario_data:
             raise ScenarioException('No blocks in scenario')
-        if not self.data_dir:
-            raise ScenarioException('Data directory must be set')
 
     def load_blocks(self):
         "Load all blocks into memory, finding and creating class objects."
@@ -108,8 +119,7 @@ class Scenario(object):
                 class_subpath += '.'
             else:
                 class_subpath, class_name = '', block_data["block"]
-            class_package = 'pytreex.block.' \
-                    + class_subpath + class_name.lower()
+            class_package = 'pytreex.block.' + class_subpath + class_name.lower()
             log_info('Loading block ' + str(block_no) + '/' +
                      str(len(self.scenario_data)) + ': ' + class_name)
             exec('import ' + class_package)
@@ -121,23 +131,36 @@ class Scenario(object):
             # load models etc.
             self.blocks[-1].load()
 
-    def apply_to(self, string, language=None, selector=None):
+    def apply_to(self, filename=None, string=None, language=None, selector=None):
         """
-        Apply the whole scenario to a string (which should be readable by
-        the first block of the scenario), return the sentence(s) of the
-        given target language and selector.
+        Apply the whole scenario to a file or to a string (which should be readable by
+        the first block of the scenario). If processing a string, return the result.
         """
-        # check if we know the target language and selector
-        language = language or self.global_args['language']
-        selector = selector or self.global_args.get('selector', '')
-        # the first block is supposed to be a reader which creates the document
-        fh = StringIO(string)
-        doc = self.blocks[0].process_document(fh)
-        # apply all other blocks
-        for block_no, block in enumerate(self.blocks[1:], start=2):
-            log_info('Applying block ' + str(block_no) + '/' +
-                     str(len(self.blocks)) + ': ' + block.__class__.__name__)
-            block.process_document(doc)
-        # return the text of all bundles for the specified sentence
-        return "\n".join([b.get_zone(language, selector).sentence
-                          for b in doc.bundles])
+        if filename is not None:
+            # the first block is supposed to be a reader which creates the document
+            log_info('Processing ' + filename)
+            log_info('Applying block 1/' + str(len(self.blocks)) + ': ' +
+                     self.blocks[0].__class__.__name__)
+            doc = self.blocks[0].process_document(filename)
+            # apply all other blocks
+            for block_no, block in enumerate(self.blocks[1:], start=2):
+                log_info('Applying block ' + str(block_no) + '/' +
+                         str(len(self.blocks)) + ': ' + block.__class__.__name__)
+                block.process_document(doc)
+        elif string is not None:
+            # check if we know the target language and selector
+            language = language or self.global_args.get['language']
+            selector = selector or self.global_args.get('selector', '')
+            # the first block is supposed to be a reader which creates the document
+            fh = StringIO(string)
+            doc = self.blocks[0].process_document(fh)
+            # apply all other blocks
+            for block_no, block in enumerate(self.blocks[1:], start=2):
+                log_info('Applying block ' + str(block_no) + '/' +
+                         str(len(self.blocks)) + ': ' + block.__class__.__name__)
+                block.process_document(doc)
+            # return the text of all bundles for the specified sentence
+            return "\n".join([b.get_zone(language, selector).sentence
+                              for b in doc.bundles])
+        else:
+            raise ScenarioException('Filename or input string must be set!')
