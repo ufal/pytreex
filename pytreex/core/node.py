@@ -1138,7 +1138,8 @@ class AMR(Node, Ordered):
 
     attrib = [('varname', types.UnicodeType), ('nodetype', types.UnicodeType),
               ('modifier', types.UnicodeType), ('concept', types.UnicodeType),
-              ('src_tnode.rf', types.UnicodeType), ('coref.rf', types.ListType)]
+              ('src_tnode.rf', types.UnicodeType), ('coref.rf', types.ListType),
+              ('is_ne_head', types.BooleanType), ('is_ne_subnode', types.BooleanType)]
 
     ref_attrib = ['src_tnode.rf', 'coref.rf']
 
@@ -1278,6 +1279,13 @@ class AMR(Node, Ordered):
             del data['t_lemma']
         if 'coref_text.rf' in data:
             data['coref.rf'] = data['coref_text.rf']
+        if 'wild' in data:
+            if 'is_ne_head' in data['wild']:
+                data['is_ne_head'] = data['wild']['is_ne_head']
+                del data['wild']['is_ne_head']
+            if 'is_ne_subnode' in data['wild']:
+                data['is_ne_subnode'] = data['wild']['is_ne_subnode']
+                del data['wild']['is_ne_subnode']
         if data['nodetype'] == 'coref' and 'coref.rf' not in data:
             log_warn('Coref-type node has no coreference: ' . str(data))
 
@@ -1298,10 +1306,16 @@ class AMR(Node, Ordered):
             data['coref_text.rf'] = data['coref.rf']
             del data['varname']
             del data['coref.rf']
+        if 'wild' not in data and ('modifier' in data or
+                                   'is_ne_head' in data or
+                                   'is_ne_subnode' in data):
+            data['wild'] = {}
         if 'modifier' in data:
-            if 'wild' not in data:
-                data['wild'] = {}
             data['wild']['modifier'] = data['modifier']
             del data['modifier']
         if 'nodetype' in data and data['nodetype'] != 'root':
             del data['nodetype']
+        if 'is_ne_head' in data:
+            data['wild']['is_ne_head'] = data['is_ne_head']
+        if 'is_ne_subnode' in data:
+            data['wild']['is_ne_subnode'] = data['is_ne_subnode']
