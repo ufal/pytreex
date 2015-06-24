@@ -7,7 +7,8 @@ trees, nodes, and blocks.
 
 One can run Treex-like scenarios (which are stored in YAML) from the command-line.
 However, the current version is not able to read Treex XML files. Treex XML files must be
-stored in YAML format using the [Write::YAML]() Treex block before using them here.
+stored in YAML format using the [Write::YAML](https://github.com/ufal/treex/blob/master/lib/Treex/Block/Write/YAML.pm)
+Treex block before using them here.
 
 This Python version of Treex is experimental and its use case is at best marginal; we still
 recommend you to use the original, [Perl Treex](https://github.com/ufal/treex).
