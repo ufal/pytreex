@@ -1104,6 +1104,456 @@ class A(Node, Ordered, EffectiveRelations, InClause):
     def morphcat_possgender(self, value):
         self.set_attr('morphcat/possgender', value)
 
+    @property
+    def iset_pos(self):
+        val = self.get_attr('iset/pos')
+        return val if val is not None else ''
+
+    @iset_pos.setter
+    def iset_pos(self, value):
+        self.set_attr('iset/pos', value)
+
+    @property
+    def iset_nountype(self):
+        val = self.get_attr('iset/nountype')
+        return val if val is not None else ''
+
+    @iset_nountype.setter
+    def iset_nountype(self, value):
+        self.set_attr('iset/nountype', value)
+
+    @property
+    def iset_nametype(self):
+        val = self.get_attr('iset/nametype')
+        return val if val is not None else ''
+
+    @iset_nametype.setter
+    def iset_nametype(self, value):
+        self.set_attr('iset/nametype', value)
+
+    @property
+    def iset_adjtype(self):
+        val = self.get_attr('iset/adjtype')
+        return val if val is not None else ''
+
+    @iset_adjtype.setter
+    def iset_adjtype(self, value):
+        self.set_attr('iset/adjtype', value)
+
+    @property
+    def iset_prontype(self):
+        val = self.get_attr('iset/prontype')
+        return val if val is not None else ''
+
+    @iset_prontype.setter
+    def iset_prontype(self, value):
+        self.set_attr('iset/prontype', value)
+
+    @property
+    def iset_numtype(self):
+        val = self.get_attr('iset/numtype')
+        return val if val is not None else ''
+
+    @iset_numtype.setter
+    def iset_numtype(self, value):
+        self.set_attr('iset/numtype', value)
+
+    @property
+    def iset_numform(self):
+        val = self.get_attr('iset/numform')
+        return val if val is not None else ''
+
+    @iset_numform.setter
+    def iset_numform(self, value):
+        self.set_attr('iset/numform', value)
+
+    @property
+    def iset_numvalue(self):
+        val = self.get_attr('iset/numvalue')
+        return val if val is not None else ''
+
+    @iset_numvalue.setter
+    def iset_numvalue(self, value):
+        self.set_attr('iset/numvalue', value)
+
+    @property
+    def iset_accommodability(self):
+        val = self.get_attr('iset/accommodability')
+        return val if val is not None else ''
+
+    @iset_accommodability.setter
+    def iset_accommodability(self, value):
+        self.set_attr('iset/accommodability', value)
+
+    @property
+    def iset_verbtype(self):
+        val = self.get_attr('iset/verbtype')
+        return val if val is not None else ''
+
+    @iset_verbtype.setter
+    def iset_verbtype(self, value):
+        self.set_attr('iset/verbtype', value)
+
+    @property
+    def iset_advtype(self):
+        val = self.get_attr('iset/advtype')
+        return val if val is not None else ''
+
+    @iset_advtype.setter
+    def iset_advtype(self, value):
+        self.set_attr('iset/advtype', value)
+
+    @property
+    def iset_adpostype(self):
+        val = self.get_attr('iset/adpostype')
+        return val if val is not None else ''
+
+    @iset_adpostype.setter
+    def iset_adpostype(self, value):
+        self.set_attr('iset/adpostype', value)
+
+    @property
+    def iset_conjtype(self):
+        val = self.get_attr('iset/conjtype')
+        return val if val is not None else ''
+
+    @iset_conjtype.setter
+    def iset_conjtype(self, value):
+        self.set_attr('iset/conjtype', value)
+
+    @property
+    def iset_parttype(self):
+        val = self.get_attr('iset/parttype')
+        return val if val is not None else ''
+
+    @iset_parttype.setter
+    def iset_parttype(self, value):
+        self.set_attr('iset/parttype', value)
+
+    @property
+    def iset_punctype(self):
+        val = self.get_attr('iset/punctype')
+        return val if val is not None else ''
+
+    @iset_punctype.setter
+    def iset_punctype(self, value):
+        self.set_attr('iset/punctype', value)
+
+    @property
+    def iset_puncside(self):
+        val = self.get_attr('iset/puncside')
+        return val if val is not None else ''
+
+    @iset_puncside.setter
+    def iset_puncside(self, value):
+        self.set_attr('iset/puncside', value)
+
+    @property
+    def iset_synpos(self):
+        val = self.get_attr('iset/synpos')
+        return val if val is not None else ''
+
+    @iset_synpos.setter
+    def iset_synpos(self, value):
+        self.set_attr('iset/synpos', value)
+
+    @property
+    def iset_morphpos(self):
+        val = self.get_attr('iset/morphpos')
+        return val if val is not None else ''
+
+    @iset_morphpos.setter
+    def iset_morphpos(self, value):
+        self.set_attr('iset/morphpos', value)
+
+    @property
+    def iset_poss(self):
+        val = self.get_attr('iset/poss')
+        return val if val is not None else ''
+
+    @iset_poss.setter
+    def iset_poss(self, value):
+        self.set_attr('iset/poss', value)
+
+    @property
+    def iset_reflex(self):
+        val = self.get_attr('iset/reflex')
+        return val if val is not None else ''
+
+    @iset_reflex.setter
+    def iset_reflex(self, value):
+        self.set_attr('iset/reflex', value)
+
+    @property
+    def iset_negativeness(self):
+        val = self.get_attr('iset/negativeness')
+        return val if val is not None else ''
+
+    @iset_negativeness.setter
+    def iset_negativeness(self, value):
+        self.set_attr('iset/negativeness', value)
+
+    @property
+    def iset_definiteness(self):
+        val = self.get_attr('iset/definiteness')
+        return val if val is not None else ''
+
+    @iset_definiteness.setter
+    def iset_definiteness(self, value):
+        self.set_attr('iset/definiteness', value)
+
+    @property
+    def iset_foreign(self):
+        val = self.get_attr('iset/foreign')
+        return val if val is not None else ''
+
+    @iset_foreign.setter
+    def iset_foreign(self, value):
+        self.set_attr('iset/foreign', value)
+
+    @property
+    def iset_gender(self):
+        val = self.get_attr('iset/gender')
+        return val if val is not None else ''
+
+    @iset_gender.setter
+    def iset_gender(self, value):
+        self.set_attr('iset/gender', value)
+
+    @property
+    def iset_possgender(self):
+        val = self.get_attr('iset/possgender')
+        return val if val is not None else ''
+
+    @iset_possgender.setter
+    def iset_possgender(self, value):
+        self.set_attr('iset/possgender', value)
+
+    @property
+    def iset_animateness(self):
+        val = self.get_attr('iset/animateness')
+        return val if val is not None else ''
+
+    @iset_animateness.setter
+    def iset_animateness(self, value):
+        self.set_attr('iset/animateness', value)
+
+    @property
+    def iset_number(self):
+        val = self.get_attr('iset/number')
+        return val if val is not None else ''
+
+    @iset_number.setter
+    def iset_number(self, value):
+        self.set_attr('iset/number', value)
+
+    @property
+    def iset_possnumber(self):
+        val = self.get_attr('iset/possnumber')
+        return val if val is not None else ''
+
+    @iset_possnumber.setter
+    def iset_possnumber(self, value):
+        self.set_attr('iset/possnumber', value)
+
+    @property
+    def iset_possednumber(self):
+        val = self.get_attr('iset/possednumber')
+        return val if val is not None else ''
+
+    @iset_possednumber.setter
+    def iset_possednumber(self, value):
+        self.set_attr('iset/possednumber', value)
+
+    @property
+    def iset_case(self):
+        val = self.get_attr('iset/case')
+        return val if val is not None else ''
+
+    @iset_case.setter
+    def iset_case(self, value):
+        self.set_attr('iset/case', value)
+
+    @property
+    def iset_prepcase(self):
+        val = self.get_attr('iset/prepcase')
+        return val if val is not None else ''
+
+    @iset_prepcase.setter
+    def iset_prepcase(self, value):
+        self.set_attr('iset/prepcase', value)
+
+    @property
+    def iset_degree(self):
+        val = self.get_attr('iset/degree')
+        return val if val is not None else ''
+
+    @iset_degree.setter
+    def iset_degree(self, value):
+        self.set_attr('iset/degree', value)
+
+    @property
+    def iset_person(self):
+        val = self.get_attr('iset/person')
+        return val if val is not None else ''
+
+    @iset_person.setter
+    def iset_person(self, value):
+        self.set_attr('iset/person', value)
+
+    @property
+    def iset_possperson(self):
+        val = self.get_attr('iset/possperson')
+        return val if val is not None else ''
+
+    @iset_possperson.setter
+    def iset_possperson(self, value):
+        self.set_attr('iset/possperson', value)
+
+    @property
+    def iset_politeness(self):
+        val = self.get_attr('iset/politeness')
+        return val if val is not None else ''
+
+    @iset_politeness.setter
+    def iset_politeness(self, value):
+        self.set_attr('iset/politeness', value)
+
+    @property
+    def iset_position(self):
+        val = self.get_attr('iset/position')
+        return val if val is not None else ''
+
+    @iset_position.setter
+    def iset_position(self, value):
+        self.set_attr('iset/position', value)
+
+    @property
+    def iset_subcat(self):
+        val = self.get_attr('iset/subcat')
+        return val if val is not None else ''
+
+    @iset_subcat.setter
+    def iset_subcat(self, value):
+        self.set_attr('iset/subcat', value)
+
+    @property
+    def iset_verbform(self):
+        val = self.get_attr('iset/verbform')
+        return val if val is not None else ''
+
+    @iset_verbform.setter
+    def iset_verbform(self, value):
+        self.set_attr('iset/verbform', value)
+
+    @property
+    def iset_mood(self):
+        val = self.get_attr('iset/mood')
+        return val if val is not None else ''
+
+    @iset_mood.setter
+    def iset_mood(self, value):
+        self.set_attr('iset/mood', value)
+
+    @property
+    def iset_tense(self):
+        val = self.get_attr('iset/tense')
+        return val if val is not None else ''
+
+    @iset_tense.setter
+    def iset_tense(self, value):
+        self.set_attr('iset/tense', value)
+
+    @property
+    def iset_aspect(self):
+        val = self.get_attr('iset/aspect')
+        return val if val is not None else ''
+
+    @iset_aspect.setter
+    def iset_aspect(self, value):
+        self.set_attr('iset/aspect', value)
+
+    @property
+    def iset_voice(self):
+        val = self.get_attr('iset/voice')
+        return val if val is not None else ''
+
+    @iset_voice.setter
+    def iset_voice(self, value):
+        self.set_attr('iset/voice', value)
+
+    @property
+    def iset_abbr(self):
+        val = self.get_attr('iset/abbr')
+        return val if val is not None else ''
+
+    @iset_abbr.setter
+    def iset_abbr(self, value):
+        self.set_attr('iset/abbr', value)
+
+    @property
+    def iset_hyph(self):
+        val = self.get_attr('iset/hyph')
+        return val if val is not None else ''
+
+    @iset_hyph.setter
+    def iset_hyph(self, value):
+        self.set_attr('iset/hyph', value)
+
+    @property
+    def iset_echo(self):
+        val = self.get_attr('iset/echo')
+        return val if val is not None else ''
+
+    @iset_echo.setter
+    def iset_echo(self, value):
+        self.set_attr('iset/echo', value)
+
+    @property
+    def iset_style(self):
+        val = self.get_attr('iset/style')
+        return val if val is not None else ''
+
+    @iset_style.setter
+    def iset_style(self, value):
+        self.set_attr('iset/style', value)
+
+    @property
+    def iset_typo(self):
+        val = self.get_attr('iset/typo')
+        return val if val is not None else ''
+
+    @iset_typo.setter
+    def iset_typo(self, value):
+        self.set_attr('iset/typo', value)
+
+    @property
+    def iset_variant(self):
+        val = self.get_attr('iset/variant')
+        return val if val is not None else ''
+
+    @iset_variant.setter
+    def iset_variant(self, value):
+        self.set_attr('iset/variant', value)
+
+    @property
+    def iset_tagset(self):
+        val = self.get_attr('iset/tagset')
+        return val if val is not None else ''
+
+    @iset_tagset.setter
+    def iset_tagset(self, value):
+        self.set_attr('iset/tagset', value)
+
+    @property
+    def iset_other(self):
+        val = self.get_attr('iset/other')
+        return val if val is not None else ''
+
+    @iset_other.setter
+    def iset_other(self, value):
+        self.set_attr('iset/other', value)
+
 
 class N(Node):
     "Representing an n-node"
