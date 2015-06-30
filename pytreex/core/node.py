@@ -1736,7 +1736,7 @@ class AMR(Node, Ordered):
             if 'is_ne_subnode' in data['wild']:
                 data['is_ne_subnode'] = data['wild']['is_ne_subnode']
                 del data['wild']['is_ne_subnode']
-        if data['nodetype'] == 'coref' and 'coref.rf' not in data:
+        if data.get('nodetype') == 'coref' and 'coref.rf' not in data:
             log_warn('Coref-type node has no coreference: ' . str(data))
 
     def data_to_tamr(self, data):
