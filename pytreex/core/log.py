@@ -24,3 +24,8 @@ def log_info(message):
 def log_warn(message):
     "Print a warning message"
     warn('PYTREEX-WARN: ' + message)
+
+def log_fatal(message, exc=Exception()):
+    "Print a fatal error message, then raise exception"
+    warn('PYTREEX-FATAL: ' + message)
+    raise exc

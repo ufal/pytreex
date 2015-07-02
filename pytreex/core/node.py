@@ -265,6 +265,13 @@ class Node(object):
         else:
             self.set_attr(ref_type, None)
 
+    def get_aligned_nodes(self):
+        "Return nodes aligned to the current node."
+        ret = []
+        for ali in self.alignment:
+            ret.append(self.document.get_node_by_id(ali['counterpart.rf']))
+        return ret
+
     def get_descendants(self, add_self=False, ordered=False,
                         preceding_only=False, following_only=False):
         "Return all topological descendants of this node."
