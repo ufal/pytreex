@@ -1,26 +1,25 @@
-#Silvie's training function 01
-#2015-06-19
-#spust makefile pro vystup do penmana bez tsurgeona a
+#!/usr/bin/env python
+# coding=utf-8
+
+# Silvie's training function 01
+# 2015-06-19
+# spust makefile pro vystup do penmana bez tsurgeona a
 # prohlidni si, jak vypada struktura uzlu.         Udelano.
 
-#Odusek has to explain how to look at t-nodes from an AMR tree
-#teprve napise API, ale formulaci uz prozradil
+# Odusek has to explain how to look at t-nodes from an AMR tree
+# teprve napise API, ale formulaci uz prozradil
 from __future__ import unicode_literals
 
-# OD: Tohle si zkopiruj do templatu -- alex.components... je obsolete
 from pytreex.core.block import Block
 from pytreex.core.exception import LoadingException
 
 __author__ = "Silvie Cinková"
 __date__ = "2015"
 
-# OD: hlavni trida se VZDY musi jmenovat stejne jako jmeno souboru, ale muze byt 
-#     psana velkymi pismeny; jmeno souboru je VZDY jen malymi.
-#     Neprojde to, kdyz se soubor jmenuje "coordination" a trida "Coordination*s*"
-#     a podobne !
+
 class Coordinations(Block):
     """
-    Build the AMR cooordination structure for two+ coordination
+    Build the AMR coordination structure for two+ coordination
     members according to the AMR manual, Conjunctions).
     Normally, a coordination has the conjunction on top and its members are
     numbered like this:
@@ -55,12 +54,10 @@ class Coordinations(Block):
         "Constructor, just checking the argument values"
         Block.__init__(self, scenario, args)
         if self.language is None:
-           raise LoadingException('Language must be defined!')
-       # OD: tady jsem Ti vymazal ten Lexicon, neni potreba, kdyz ho nepouzivas
+            raise LoadingException('Language must be defined!')
 
-    def process_amrnode(self, amrnode): #never change this function name
+    def process_amrnode(self, amrnode):  # never change this function name
         """..."""
-        # OD: dodrzuj indentaci! kod metody je o *4* znaky napravo od "def"
         tnode = amrnode.src_tnode
         if tnode is None:
             return
@@ -69,36 +66,33 @@ class Coordinations(Block):
         if tnode.functor == 'APPS':
             return
         tparent = tnode.parent
-        amrchildren =  amrnode.get_children()
-        tchildren = tnode.get_children()
+        amrchildren = amrnode.get_children()
 
-        if CoordRules.is_noun_attribute(tnode, tparent=tparent): #tparent
-            #vlevo je nazev parametru, jen nahodou uz mam stejne
-            #pojmenovanou promennou, kterou jsem si predpocitala na zacatku
+        if CoordRules.is_noun_attribute(tnode, tparent=tparent):  # tparent
+            # vlevo je nazev parametru, jen nahodou uz mam stejne
+            # pojmenovanou promennou, kterou jsem si predpocitala na zacatku
             amrparent = amrnode.parent
             for amrchild in amrchildren:
-                amrchild.parent = amrparent #@property def(parent), node.py
-                #l. 331, @parent setter, node.py l. 342 - tady vlastne nastavuju
-                #hodnotu atributu
-                amrchild.modifier = 'mod' #provides children with label
-            amrnode.remove() #removes the coordination amr node
-
-        # OD: proc tu neni proste 'else' ?
-        if not CoordRules.is_noun_attribute(tnode, tparent=tparent):
+                amrchild.parent = amrparent  # @property def(parent), node.py
+                # l. 331, @parent setter, node.py l. 342 - tady vlastne nastavuju
+                # hodnotu atributu
+                amrchild.modifier = 'mod'  # provides children with label
+            amrnode.remove()  # removes the coordination amr node
+        else:
             opnum = 1
             for amrchild in amrchildren:
-                if (tchild is None and some_coordmember_there == False ):
-                #pojmenovane entity, typ Franta Novak a Jarda Metelka  koordinace
-                #dvou p/person a pod tim jmen, kterym teprve (tomu poslednimu)
-                #odpovida koordinovany t-uzel
+                tchild = amrchild.src_tnode
+                if (tchild is None and not some_coordmember_there):
+                    # pojmenovane entity, typ Franta Novak a Jarda Metelka  koordinace
+                    # dvou p/person a pod tim jmen, kterym teprve (tomu poslednimu)
+                    # odpovida koordinovany t-uzel
                     continue
-                # OD: pozor na startswith, je to funkce stringu, ne globalni!
-                if (tchild.is_member or (tchild is None and
-                                         some_coordmember_there == True)
-                                         and tparent.formeme.startswith('n:')):
-                    # OD: dohodli jsme se, ze modifier je bez dvojtecky !
-                    amrchild.modifier = "op%d"  % opnum
+                if (tchild.is_member or (tchild is None and some_coordmember_there)
+                       and tparent.formeme.startswith('n:')):
+
+                    amrchild.modifier = "op%d" % opnum
                     opnum += 1
+
 
 class CoordRules(object):
     """This class defines rules for distinguishing various types of coordination
@@ -107,35 +101,25 @@ class CoordRules(object):
     @staticmethod
     def is_noun_attribute(tnode, tparent=None, tchildren=None):
         """Checks whether the given node is a noun attribute.
-  
+
         Not "big and heavy ball", but yes "boy who shouted and left".
         """
-        # OD: indentace je o *4* znaky! ne o 2, ne o cokoliv jinyho.
-        #     Python to mozna prezije, ale ja ne.
-        # OD: pozor na "=" a "==", viz nize !!!
-        if not tparent: # if tparent is None, condition evaluates to False.
-            tparent = tnode.parent()
-        # All children must be either adj: or n:
+        if not tparent:  # if tparent = None, condition evaluates to False.
+                tparent = tnode.parent()
+                # All children must be either adj: or n:
         if not tchildren:
             tchildren = tnode.get_children()
-        all_children_have_correct_formeme = True
+            all_children_have_correct_formeme = True
         for tchild in tchildren:
-            # OD: startswith je funkce stringu, neda se pouzivat, jaks to mela puvodne!!!
             if not tchild.formeme.startswith('adj:') and not tchild.formeme.startswith('n:'):
                 all_children_have_correct_formeme = False
                 break
-      
-        # OD: Tenhle return podle tebe nepatril k zadne metode -- dej pozor na tu indentaci!
-        # OD: opet, pozor na startswith
         return (tnode.nodetype == 'coap'
-                  and tparent.formeme.startswith('n:')
-                  and all_children_have_correct_formeme)
+                and tparent.formeme.startswith('n:')
+                and all_children_have_correct_formeme)
 
     @staticmethod
     def is_coordinated_named_entity(amrnode):
-        # OD: dej pozor na '=" a "==" -- prvni PRIRAZUJE, druhe testuje rovnost !
-        #     navic u None testuj pomoci "is".
-        # OD: kde jsi vzala promenou "concept" ??? dej pozor, ktere promenne mas...
         if  (amrnode.concept in ('person', 'location') and amrnode.src_tnode is None):
             potential_tr_member_hosts = amrnode.get_descendants()
             some_coordmember_there = False
@@ -143,7 +127,7 @@ class CoordRules(object):
                 candidate = potential_tr_member_host.src_tnode
                 if candidate.is_member == 1:
                     some_coordmember_there = True
-        # OD: viz vyse -- return je soucasti metody, takze je indentovany oproti "def"!
         return some_coordmember_there
 
-# OD: na konci souboru by nemely byt zbytecne prazdne radky
+
+
