@@ -1,14 +1,17 @@
 #!/usr/bin/env python
+# coding=utf-8
+
 from __future__ import unicode_literals
 
-from alex.components.nlg.tectotpl.core.block import Block
-from alex.components.nlg.tectotpl.core.exception import LoadingException
-from alex.components.nlg.tectotpl.tool.lexicon.cs import Lexicon
+from pytreex.core.block import Block
+from pytreex.core.exception import LoadingException
 
 __author__ = "Silvie Cinková"
-__date__ = "2015"                                                                                                         
-                    
+__date__ = "2015"
+
+
 class Modality(Block):
+
     """
     This class treats modal predicates. Modal verbs are hidden in
     TR (encoded as gram/deontmod in the lexical verb), but not in AMR.
@@ -21,37 +24,36 @@ class Modality(Block):
     - perm: "smět-01"
     - fac: "umět-01"
     """
-    
-    def __init__(self, scenario, args):                                               
-        "Constructor, just checking the argument values"                              
-        Block.__init__(self, scenario, args)                                          
-        if self.language is None:                                                     
-          raise LoadingException('Language must be defined!')                        
-        self.lexicon = Lexicon()    
+
+    def __init__(self, scenario, args):
+        "Constructor, just checking the argument values"
+        Block.__init__(self, scenario, args)
+        if self.language is None:
+            raise LoadingException('Language must be defined!')
 
     def process_amrnode(self, amrnode):
-        tnode = amrnode.src_tnode                                         
-        if tnode is None: 
+        tnode = amrnode.src_tnode
+        if tnode is None:
             return
         if tnode.gram_deontmod not in ('deb', 'hrt', 'vol', 'poss', 'perm', 'fac'):
             return
         else:
-            #identify the parent of amrnode
+            # identify the parent of amrnode
             amr_original_parent = amrnode.parent
-            #create a child node on the parent
-            amr_new_parent = create.child(amr_original_parent)
-            #this child node will be the modal node, so give it a label
+            # create a child node on the parent
+            amr_new_parent = amr_original_parent.create_child()
+            # this child node will be the modal node, so give it a label
             if tnode.gram_deontmod == 'deb':
-                amr_new_parent.modifier == 'muset-01'
+                amr_new_parent.modifier = 'muset-01'
             if tnode.gram_deontmod == 'hrt':
-                amr_new_parent.modifier == 'mít_povinnost-01'
+                amr_new_parent.modifier = 'mít_povinnost-01'
             if tnode.gram_deontmod == 'vol':
-                amr_new_parent.modifier == 'chtít-01'
+                amr_new_parent.modifier = 'chtít-01'
             if tnode.gram_deontmod == 'poss':
-                amr_new_parent.modifier == 'moci-01'
+                amr_new_parent.modifier = 'moci-01'
             if tnode.gram_deontmod == 'perm':
-                amr_new_parent.modifier == 'smět-01'
+                amr_new_parent.modifier = 'smět-01'
             if tnode.gram_deontmod == 'fac':
-                amr_new_parent.modifier == 'umět-01'
-            #relocate amrnode as a child of this new modal node
-            amrnode.parent = amr_new_parent    
+                amr_new_parent.modifier = 'umět-01'
+            # relocate amrnode as a child of this new modal node
+            amrnode.parent = amr_new_parent
