@@ -35,7 +35,7 @@ class Polarity(Block):
         eparents = tnode.get_eparents()
         aniz = False
         for eparent in eparents:
-            if eparent.lemma == 'aniž' and tnode.is_right_child:
+            if eparent.t_lemma == 'aniž' and tnode.is_right_child:
                 aniz = True
         if aniz:
             polaritynode = tnode.create_child()

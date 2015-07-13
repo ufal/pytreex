@@ -44,16 +44,17 @@ class Modality(Block):
             amr_new_parent = amr_original_parent.create_child()
             # this child node will be the modal node, so give it a label
             if tnode.gram_deontmod == 'deb':
-                amr_new_parent.modifier = 'muset-01'
+                amr_new_parent.concept = 'muset-01'
             if tnode.gram_deontmod == 'hrt':
-                amr_new_parent.modifier = 'mít_povinnost-01'
+                amr_new_parent.concept = 'mít_povinnost-01'
             if tnode.gram_deontmod == 'vol':
-                amr_new_parent.modifier = 'chtít-01'
+                amr_new_parent.concept = 'chtít-01'
             if tnode.gram_deontmod == 'poss':
-                amr_new_parent.modifier = 'moci-01'
+                amr_new_parent.concept = 'moci-01'
             if tnode.gram_deontmod == 'perm':
-                amr_new_parent.modifier = 'smět-01'
+                amr_new_parent.concept = 'smět-01'
             if tnode.gram_deontmod == 'fac':
-                amr_new_parent.modifier = 'umět-01'
+                amr_new_parent.concept = 'umět-01'
+            # TODO: what about the modifier ???
             # relocate amrnode as a child of this new modal node
             amrnode.parent = amr_new_parent
