@@ -55,6 +55,8 @@ class Modality(Block):
                 amr_new_parent.concept = 'smět-01'
             if tnode.gram_deontmod == 'fac':
                 amr_new_parent.concept = 'umět-01'
+            # allocate a new variable name for the new node
+            amr_new_parent.set_auto_var()
             # TODO: what about the modifier ???
             # relocate amrnode as a child of this new modal node
             amrnode.parent = amr_new_parent
