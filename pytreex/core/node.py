@@ -1606,7 +1606,7 @@ class AMR(Node, Ordered):
             self._data_from_tamr(data)
         # first keep parent as none, then set it manually (wait till other attributes are
         # filled and update the variable name as well)
-        Node.__init__(self, data, None, zone)
+        Node.__init__(self, data, None, zone or parent.zone)
         self.parent = parent
         # for root, remember which variables are taken in descendants, update upon parent setting
         if self.is_root:
