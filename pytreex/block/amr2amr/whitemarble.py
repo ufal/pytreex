@@ -1,15 +1,21 @@
 #!/usr/bin/env python
+# coding=utf-8
 
 from __future__ import unicode_literals
 
-from alex.components.nlg.tectotpl.core.block import Block
-from alex.components.nlg.tectotpl.core.exception import LoadingException
-from alex.components.nlg.tectotpl.tool.lexicon.cs import Lexicon
+from pytreex.core.block import Block
+from pytreex.core.exception import LoadingException
 
 __author__ = "Silvie Cinková"
-__date__ = "2015"                                                                                                         
-                    
+__date__ = "2015"
+
+
+# OD's note: this seems really complicated -- why not just relabel all RSTRs to mod ??
+# I think that it would work the same in 99.9% cases
+
+
 class WhiteMarble(Block):
+
     """
     This class creates this AMR structure:
     (m / marble
@@ -20,49 +26,40 @@ class WhiteMarble(Block):
     #since coordinated attributes are already covered by
     #the Coordination class!
     #This class served as the base for the HisBoat class, so if one
-    #gets an update/correction, the other ought to as well. 
-    """                                                                                      
-    
-    def __init__(self, scenario, args):                                               
-        "Constructor, just checking the argument values"                              
-        Block.__init__(self, scenario, args)                                          
-        if self.language is None:                                                     
-           raise LoadingException('Language must be defined!')                        
-        self.lexicon = Lexicon()    
+    #gets an update/correction, the other ought to as well.
+    """
+
+    def __init__(self, scenario, args):
+        "Constructor, just checking the argument values"
+        Block.__init__(self, scenario, args)
+        if self.language is None:
+            raise LoadingException('Language must be defined!')
 
     def process_amrnode(self, amrnode):
-        tnode = amrnode.src_tnode                                         
-        if tnode is None: 
-           return
+        tnode = amrnode.src_tnode
+        if tnode is None:
+            return
         if not tnode.formeme.startswith('n:'):
             return
-        else: 
+        else:
+            # is really OK, ignore attr in coord
             tchildren = tnode.get_children()
-            #detect all descendantst of amrnode, not just children
-            #because the relevant amrchildren could have been already
-            #relocated by other rules, but unlikely somewhere upwards
+            # detect all descendants of amrnode, not just children
+            # because the relevant amrchildren could have been already
+            # relocated by other rules, but unlikely somewhere upwards
             amrdescendants = amrnode.get_descendants()
-            #detect all RSTR functored tchildren of tnode
-            rstrtnodes = []
-            #gather ids of all tchildren functored RSTR
-            rstrids = []
-            #prepare a list of amrnodes to be labeled 'mod'    
-            amrmodchildren = []
+            # detect all RSTR functored tchildren of tnode
+            rstr_tnodes = set()
             for tchild in tchildren:
                 if (tchild.functor == 'RSTR' and
-                    tchild.formeme.startswith('adj'):
-                    rstrnodes = rstrnodes.extend(tchild)
-                    for rstrnode in rstrnodes:
-                        rstrids = rstrids.extend(rstrnode.id)
-                    for amrmodchild in amrmodchildren:
-                        if amrmodchild.id in rstrids:
-                            amrmodchild.modifier = 'mod'
-                            #just in case amrmodchild happens not
-                            #to be a child of amrnode, make it one
-                            amrmodchild.parent = amrnode                          
-                    
-      
-                
-                
-                
-        
+                        tchild.formeme.startswith('adj')):
+                    # have all RSTR nodes
+                    rstr_tnodes.add(tchild)
+
+            for amrdescendant in amrdescendants:  # find amrnode
+                # descendants with the same id as their corresponding t-nodes
+                if amrdescendant.src_tnode in rstr_tnodes:
+                    amrdescendant.modifier = 'mod'
+                    # make sure that this amrmoddescendant is
+                    # amrmod's child:
+                    amrdescendant.parent = amrnode
