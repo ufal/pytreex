@@ -5,7 +5,7 @@ from __future__ import unicode_literals
 
 from pytreex.core.block import Block
 from pytreex.core.exception import LoadingException
-
+import re
 
 __author__ = "Silvie Cinková"
 __date__ = "2015"
@@ -57,13 +57,13 @@ class HisBoat(Block):
             for tchild in tchildren:
                 if (tchild.functor == 'APP' and
                     tchild.lex_anode and
-                    (tchild.lex_anode.tag.match('.....[MFXZ]') or  # if match
+                    (re.match(r'.....[MFXZ]', tchild.lex_anode.tag) or  # if match
                      # really takes the first match from the beginning of string
                      # this is the regex pattern that worked in PMLTQ:
                      # "(^.[SU8]|^.....[MFXZ])" --the line start was necessary!
-                     tchild.lex_anode.tag.match('.[[SU8]]'))):
+                     re.match(r'.[SU8]', tchild.lex_anode.tag))):
                     # ok write tchild.lex_anode.tag.match('.....[MFXZ]|.[SU8]')?
-                    tappnodes = tappnodes.add(tchild)  # have all APP nodes in one list
+                    tappnodes.add(tchild)  # have all APP nodes in one list
 
             for amrdescendant in amrdescendants:  # find amrnode
                 # descendants with the same id as their corresponding t-nodes
