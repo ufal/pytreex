@@ -49,8 +49,8 @@ class ReadCoNLLU(Block):
         
         for line in fh:
             
-            # Strip newline character
-            line = line.rstrip('\n')
+            # Strip newline character (\n or \r\n)
+            line = line.rstrip('\r\n')
             
             # Skip empty lines and comments before start of sentence
             if len(nodes)==1 and (not line or line.startswith('#')): continue
@@ -70,12 +70,15 @@ class ReadCoNLLU(Block):
             columns = line.split('\t')
             
             # TODO: multi-word tokens
-            if columns[0].find('-') >= 0: continue
+            if '-' in columns[0]: continue
             
             # Create new node
-            new_node = root.create_child(data = dict(zip(
-                ['form', 'lemma', 'upos', 'xpos', 'feats',    'deprel', 'deps', 'misc'],
-                columns[1:6]                                 + columns[7:10]  ) ) )
+            new_node = root.create_child(data = dict(
+                (key, value) for key, value in
+                zip(['form', 'lemma', 'upos', 'xpos', 'feats',    'deprel', 'deps', 'misc'],
+                    columns[1:6]                                 + columns[7:10]  )
+                if value is not None and value != '_'
+                ) )
             nodes.append(new_node)
             parents.append(int(columns[6]))
 

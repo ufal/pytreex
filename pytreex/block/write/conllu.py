@@ -30,6 +30,7 @@ class WriteCoNLLU(BaseWriter):
             index = 1
             for node in zone.atree.get_descendants(ordered=1):
                 out.write('\t'.join(
+                    '_' if value is None else value for value in
                     map((lambda x: str(x) if type(x)==int else getattr(node, x, '_')),
                         [index, 'form', 'lemma', 'upos', 'xpos', 'feats', node.parent.ord, 'deprel', 'deps', 'misc'])
                 ) + '\n')
