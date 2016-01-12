@@ -323,11 +323,19 @@ class Node(object):
 
     def remove(self):
         "Remove the node from the tree."
-        if self.get_children():
-            raise RuntimeException('Cannot remove a node with children:' +
-                                   self.id)
+        for child in self.get_children():
+            child.remove()
         self.parent = None
         self.document.remove_node(self.id)
+
+    def is_descendant_of(self, another_node):
+        "Is this node a descendant of another node?"
+        ancestor = self.parent
+        while ancestor is not None:
+            if ancestor is another_node:
+                return True;
+            ancestor = ancestor.parent
+        return False;
 
     @property
     def root(self):
@@ -347,11 +355,11 @@ class Node(object):
     @parent.setter
     def parent(self, value):
         "Change the parent of the current node."
-        # TODO possibly implement moving across documents
-        # (would require new ID indexing)
-        # TODO check for cycles
-        if value is not None and self.__document != value.__document:
-            raise RuntimeException('Cannot move nodes across documents.')
+        if value is not None:
+            if self.__document != value.__document:
+                raise RuntimeException('Cannot move nodes across documents.')
+            if (value.is_descendant_of(self) or value is self):
+                raise RuntimeException('Attempt to create cycle with nodeA.parent = descendant_of_nodeA.')
         # filter original parent's children
         if self.__parent:
             self.__parent.__children = [child for child
