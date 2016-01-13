@@ -80,7 +80,12 @@ class ReadCoNLLU(Block):
                 if value is not None and value != '_'
                 ) )
             nodes.append(new_node)
-            parents.append(int(columns[6]))
+            try:
+                parent_index = int(columns[6])
+            except (ValueError, TypeError):
+                # TODO: warning?
+                parent_index = 0
+            parents.append(parent_index)
 
             # Word order TODO is this needed?
             new_node.shift_after_subtree(last_node)
