@@ -349,6 +349,7 @@ class Node(object):
         "Change the parent of the current node."
         # TODO possibly implement moving across documents
         # (would require new ID indexing)
+        # TODO check for cycles
         if value is not None and self.__document != value.__document:
             raise RuntimeException('Cannot move nodes across documents.')
         # filter original parent's children
@@ -987,7 +988,11 @@ class A(Node, Ordered, EffectiveRelations, InClause):
               ('is_parenthesis_root', types.BooleanType),
               ('edge_to_collapse', types.BooleanType),
               ('is_auxiliary', types.BooleanType),
-              ('p_terminal.rf', types.UnicodeType), ]
+              ('p_terminal.rf', types.UnicodeType),
+              ('upos', types.UnicodeType), ('xpos', types.UnicodeType),
+              ('feats', types.UnicodeType), ('deprel', types.UnicodeType),
+              ('deps', types.UnicodeType), ('misc', types.UnicodeType),
+              ]
     ref_attrib = ['p_terminal.rf']
 
     morphcat_members = ['pos', 'subpos', 'gender', 'number', 'case', 'person',
