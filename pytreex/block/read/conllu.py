@@ -63,7 +63,7 @@ class ReadCoNLLU(Block):
                 for i in xrange(1,len(nodes)):
                     nodes[i].parent = nodes[parents[i]]
                 if len(comment):
-                    root.set_attr('wild/comment', comment)
+                    zone.wild['comment'] = comment
 
                 # Prepare a new bundle
                 bundle = doc.create_bundle()
@@ -113,7 +113,7 @@ class ReadCoNLLU(Block):
             for i in xrange(1,len(nodes)):
                 nodes[i].parent = nodes[parents[i]]
             if len(comment):
-                root.set_attr('wild/comment', comment)
+                zone.wild['comment'] = comment
 
         fh.close()
         return doc

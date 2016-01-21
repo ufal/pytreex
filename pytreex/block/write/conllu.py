@@ -31,7 +31,7 @@ class WriteCoNLLU(BaseWriter):
             # Empty sentences are not allowed in CoNLL-U.
             if len(nodes)==0:
                 continue
-            comment = zone.atree.get_attr('wild/comment')
+            comment = zone.wild['comment']
             if comment:
                 out.write('#' + comment.rstrip('\r\n').replace('\n','\n#') + '\n')
             index = 1
