@@ -483,8 +483,6 @@ class Ordered(object):
         in the ordering.
         """
         subtree = other.get_descendants(ordered=True, add_self=True, except_subtree=self)
-        if len(subtree) <= 1 and self == other:
-            return  # no point if self==other and there are no children
         self.__shift_to_node(subtree[0] == self and subtree[1] or subtree[0],
                              after=False, without_children=without_children)
 
@@ -493,13 +491,13 @@ class Ordered(object):
         Shift one node after the whole subtree of another node in the ordering.
         """
         subtree = other.get_descendants(ordered=True, add_self=True, except_subtree=self)
-        if len(subtree) <= 1 and self == other:
-            return   # no point if self==other and there are no children
         self.__shift_to_node(subtree[-1] == self and subtree[-2] or subtree[-1],
                              after=True, without_children=without_children)
 
     def __shift_to_node(self, other, after, without_children=False):
         "Shift a node before or after another node in the ordering"
+        if self==other:
+            return
         if not without_children and other.is_descendant_of(self):
             raise RuntimeException('{} is a descendant of {}. Maybe you have forgotten without_children=True.'.format(other.id, self.id))
         all_nodes = self.root.get_descendants(ordered=True, add_self=True)
