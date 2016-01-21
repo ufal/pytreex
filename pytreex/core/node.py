@@ -482,17 +482,25 @@ class Ordered(object):
         Shift one node before the whole subtree of another node
         in the ordering.
         """
-        subtree = other.get_descendants(ordered=True, add_self=True, except_subtree=self)
-        self.__shift_to_node(subtree[0] == self and subtree[1] or subtree[0],
-                             after=False, without_children=without_children)
+        if without_children:
+            subtree = [ node for node in other.get_descendants(ordered=True, add_self=True) if node != self]
+        else:
+            subtree = other.get_descendants(ordered=True, add_self=True, except_subtree=self)
+        if len(subtree)==0:
+            return
+        self.__shift_to_node(subtree[0], after=False, without_children=without_children)
 
     def shift_after_subtree(self, other, without_children=False):
         """\
         Shift one node after the whole subtree of another node in the ordering.
         """
-        subtree = other.get_descendants(ordered=True, add_self=True, except_subtree=self)
-        self.__shift_to_node(subtree[-1] == self and subtree[-2] or subtree[-1],
-                             after=True, without_children=without_children)
+        if without_children:
+            subtree = [ node for node in other.get_descendants(ordered=True, add_self=True) if node != self]
+        else:
+            subtree = other.get_descendants(ordered=True, add_self=True, except_subtree=self)
+        if len(subtree)==0:
+            return
+        self.__shift_to_node(subtree[-1], after=True, without_children=without_children)
 
     def __shift_to_node(self, other, after, without_children=False):
         "Shift a node before or after another node in the ordering"
