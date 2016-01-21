@@ -46,50 +46,63 @@ class ReadCoNLLU(Block):
         last_node = root
         nodes = [root]
         parents = [0]
+        comment = ''
         
         for line in fh:
             
             # Strip newline character (\n or \r\n)
             line = line.rstrip('\r\n')
-            
-            # Skip empty lines and comments before start of sentence
-            if len(nodes)==1 and (not line or line.startswith('#')): continue
-            
+
             # Empty line as a end of sentence
             if not line:
+                # Ignore (multiple) empty lines before start of sentence (invalid CoNLL-U)
+                if len(nodes)==1:
+                    continue
+
+                # Rehang to correct parents and save nonempty comment to root
                 for i in xrange(1,len(nodes)):
                     nodes[i].parent = nodes[parents[i]]
+                if len(comment):
+                    root.set_attr('wild/comment', comment)
+
+                # Prepare a new bundle
                 bundle = doc.create_bundle()
                 zone = bundle.create_zone(self.language, self.selector)
                 root = zone.create_atree()
                 last_node = root
                 nodes = [root]
                 parents = [0]
-                continue
+                comment = ''
             
-            columns = line.split('\t')
-            
-            # TODO: multi-word tokens
-            if '-' in columns[0]: continue
-            
-            # Create new node
-            new_node = root.create_child(data = dict(
-                (key, value) for key, value in
-                zip(['form', 'lemma', 'upos', 'xpos', 'feats',    'deprel', 'deps', 'misc'],
-                    columns[1:6]                                 + columns[7:10]  )
-                if value is not None and value != '_'
-                ) )
-            nodes.append(new_node)
-            try:
-                parent_index = int(columns[6])
-            except (ValueError, TypeError):
-                # TODO: warning?
-                parent_index = 0
-            parents.append(parent_index)
+            # Comment
+            elif line[0] == '#':
+                comment = comment + line[1:] + "\n"
 
-            # Word order TODO is this needed?
-            new_node.shift_after_subtree(last_node)
-            last_node = new_node
+            # A normal line with one token
+            else:
+                columns = line.split('\t')
+            
+                # TODO: multi-word tokens
+                if '-' in columns[0]: continue
+            
+                # Create new node
+                new_node = root.create_child(data = dict(
+                    (key, value) for key, value in
+                    zip(['form', 'lemma', 'upos', 'xpos', 'feats',    'deprel', 'deps', 'misc'],
+                        columns[1:6]                                 + columns[7:10]  )
+                    if value is not None and value != '_'
+                    ) )
+                nodes.append(new_node)
+                try:
+                    parent_index = int(columns[6])
+                except (ValueError, TypeError):
+                    # TODO: warning?
+                    parent_index = 0
+                parents.append(parent_index)
+
+                # Word order TODO is this needed?
+                new_node.shift_after_subtree(last_node)
+                last_node = new_node
 
         # The last bundle should be empty (if the file ended with an empty line),
         # so we need to remove it. But let's check it.
@@ -98,5 +111,8 @@ class ReadCoNLLU(Block):
         else:
             for i in xrange(1,len(nodes)):
                 nodes[i].parent = nodes[parents[i]]
+            if len(comment):
+                root.set_attr('wild/comment', comment)
+
         fh.close()
         return doc

@@ -27,8 +27,15 @@ class WriteCoNLLU(BaseWriter):
         out = file_stream(self.get_output_file_name(doc), 'w', encoding='UTF-8')
         for bundle in doc.bundles:
             zone = bundle.get_zone(self.language, self.selector)
+            nodes = zone.atree.get_descendants(ordered=1)
+            # Empty sentences are not allowed in CoNLL-U.
+            if len(nodes)==0:
+                continue
+            comment = zone.atree.get_attr('wild/comment')
+            if comment:
+                out.write('#' + comment.rstrip('\r\n').replace('\n','\n#') + '\n')
             index = 1
-            for node in zone.atree.get_descendants(ordered=1):
+            for node in nodes:
                 out.write('\t'.join(
                     '_' if value is None else value for value in
                     map((lambda x: str(x) if type(x)==int else getattr(node, x, '_')),
