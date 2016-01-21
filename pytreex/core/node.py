@@ -465,11 +465,11 @@ class Ordered(object):
 
     def shift_after_node(self, other, without_children=False):
         "Shift one node after another in the ordering."
-        self.__shift_to_node(other, after=True)
+        self.__shift_to_node(other, after=True, without_children=without_children)
 
     def shift_before_node(self, other, without_children=False):
         "Shift one node before another in the ordering."
-        self.__shift_to_node(other, after=False)
+        self.__shift_to_node(other, after=False, without_children=without_children)
 
     def shift_before_subtree(self, other, without_children=False):
         """\
@@ -480,7 +480,7 @@ class Ordered(object):
         if len(subtree) <= 1 and self == other:
             return  # no point if self==other and there are no children
         self.__shift_to_node(subtree[0] == self and subtree[1] or subtree[0],
-                             after=False)
+                             after=False, without_children=without_children)
 
     def shift_after_subtree(self, other, without_children=False):
         """\
@@ -489,8 +489,8 @@ class Ordered(object):
         subtree = other.get_descendants(ordered=True, add_self=True)
         if len(subtree) <= 1 and self == other:
             return   # no point if self==other and there are no children
-        self.__shift_to_node(subtree[-1] == self
-                             and subtree[-2] or subtree[-1], after=True)
+        self.__shift_to_node(subtree[-1] == self and subtree[-2] or subtree[-1],
+                             after=True, without_children=without_children)
 
     def __shift_to_node(self, other, after, without_children=False):
         "Shift a node before or after another node in the ordering"
