@@ -321,12 +321,18 @@ class Node(object):
         return getattr(sys.modules[__name__],
                        self.__class__.__name__)(data=data, parent=self)
 
-    def remove(self):
+    def remove(self, fix_order=True):
         "Remove the node from the tree."
+        root = self.root # backup, self.root will not be reliable (why?)
         for child in self.get_children():
-            child.remove()
+            child.remove(fix_order=False)
         self.parent = None
         self.document.remove_node(self.id)
+
+        # We need to normalize ordering, so there are no gaps
+        if fix_order and isinstance(self, Ordered):
+            for new_ord, node in enumerate(root.get_descendants(add_self=True, ordered=True)):
+                node.ord = new_ord
 
     def is_descendant_of(self, another_node):
         "Is this node a descendant of another node?"
