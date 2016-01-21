@@ -273,13 +273,19 @@ class Node(object):
         return ret
 
     def get_descendants(self, add_self=False, ordered=False,
-                        preceding_only=False, following_only=False):
+                        preceding_only=False, following_only=False, except_subtree=None):
         "Return all topological descendants of this node."
-        return self._process_switches([desc for child in self.__children
-                                       for desc in
-                                       child.__descs_and_self_unsorted()],
-                                      add_self, ordered, preceding_only,
-                                      following_only)
+        if except_subtree:
+            if except_subtree==self:
+                return []
+            nodes = [desc for child in self.__children
+                     for desc in
+                     child.get_descendants(add_self=True, except_subtree=except_subtree)]
+        else:
+            nodes = [desc for child in self.__children
+                     for desc in
+                     child.__descs_and_self_unsorted()]
+        return self._process_switches(nodes, add_self, ordered, preceding_only, following_only)
 
     def get_children(self, add_self=False, ordered=False,
                      preceding_only=False, following_only=False):
@@ -476,7 +482,7 @@ class Ordered(object):
         Shift one node before the whole subtree of another node
         in the ordering.
         """
-        subtree = other.get_descendants(ordered=True, add_self=True)
+        subtree = other.get_descendants(ordered=True, add_self=True, except_subtree=self)
         if len(subtree) <= 1 and self == other:
             return  # no point if self==other and there are no children
         self.__shift_to_node(subtree[0] == self and subtree[1] or subtree[0],
@@ -486,7 +492,7 @@ class Ordered(object):
         """\
         Shift one node after the whole subtree of another node in the ordering.
         """
-        subtree = other.get_descendants(ordered=True, add_self=True)
+        subtree = other.get_descendants(ordered=True, add_self=True, except_subtree=self)
         if len(subtree) <= 1 and self == other:
             return   # no point if self==other and there are no children
         self.__shift_to_node(subtree[-1] == self and subtree[-2] or subtree[-1],
@@ -494,6 +500,8 @@ class Ordered(object):
 
     def __shift_to_node(self, other, after, without_children=False):
         "Shift a node before or after another node in the ordering"
+        if not without_children and other.is_descendant_of(self):
+            raise RuntimeException('{} is a descendant of {}. Maybe you have forgotten without_children=True.'.format(other.id, self.id))
         all_nodes = self.root.get_descendants(ordered=True, add_self=True)
         # determine what's being moved
         to_move = [self] if without_children else self.get_descendants(ordered=True, add_self=True)
