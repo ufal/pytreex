@@ -76,14 +76,15 @@ class ReadCoNLLU(Block):
             
             # Comment
             elif line[0] == '#':
-                comment = comment + line[1:] + "\n"
+                comment += line[1:] + "\n"
 
             # A normal line with one token
             else:
                 columns = line.split('\t')
             
                 # TODO: multi-word tokens
-                if '-' in columns[0]: continue
+                if '-' in columns[0]:
+                    continue
             
                 # Create new node
                 new_node = root.create_child(data = dict(
