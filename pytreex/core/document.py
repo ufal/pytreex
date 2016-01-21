@@ -141,6 +141,7 @@ class Bundle(object):
         for zone_data in data:
             zone = Zone(data=zone_data, bundle=self)
             self.__zones[(zone.language, zone.selector)] = zone
+        self.wild = {}
 
     def get_all_zones(self):
         """\
@@ -216,6 +217,7 @@ class Zone(object):
                                  if self.selector.startswith('amr') and layer == 't'
                                  else layer,
                                  data[layer + 'tree'])
+        self.wild = {}
 
     @property
     def bundle(self):
