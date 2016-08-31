@@ -13,3 +13,7 @@ Treex block before using them here.
 This Python version of Treex is experimental and its use case is at best marginal; we still
 recommend you to use the original, [Perl Treex](https://github.com/ufal/treex).
 
+Dependencies
+------------
+
+- pyyaml (install with pip)
