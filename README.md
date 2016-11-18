@@ -16,4 +16,5 @@ recommend you to use the original, [Perl Treex](https://github.com/ufal/treex).
 Dependencies
 ------------
 
-- pyyaml (install with pip)
+- [PyYAML](https://pypi.python.org/pypi/PyYAML/) (install with pip)
+- [Unidecode](https://pypi.python.org/pypi/Unidecode) (install with pip)
