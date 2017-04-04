@@ -13,8 +13,22 @@ Treex block before using them here.
 This Python version of Treex is experimental and its use case is at best marginal; we still
 recommend you to use the original, [Perl Treex](https://github.com/ufal/treex).
 
+Installation
+------------
+
+PyTreex can be installed directly from GitHub using pip:
+```
+pip install git+https://github.com/ufal/pytreex
+```
+
 Dependencies
 ------------
 
-- [PyYAML](https://pypi.python.org/pypi/PyYAML/) (install with pip)
-- [Unidecode](https://pypi.python.org/pypi/Unidecode) (install with pip)
+- [PyYAML](https://pypi.python.org/pypi/PyYAML/)
+- [Unidecode](https://pypi.python.org/pypi/Unidecode)
+
+Copyright
+---------
+
+Copyright 2013-2017 Institute of Formal and Applied Linguistics, Charles University, Prague.
+Licensed under the Apache 2.0 license (see [LICENSE.txt](LICENSE.txt)).
