@@ -10,6 +10,7 @@
 # teprve napise API, ale formulaci uz prozradil
 from __future__ import unicode_literals
 
+from builtins import object
 from pytreex.core.block import Block
 from pytreex.core.exception import LoadingException
 

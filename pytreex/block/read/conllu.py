@@ -6,6 +6,8 @@
 from __future__ import absolute_import
 from __future__ import unicode_literals
 
+from builtins import zip
+from builtins import range
 from pytreex.core.block import Block
 from pytreex.core import Document
 
@@ -60,7 +62,7 @@ class ReadCoNLLU(Block):
                     continue
 
                 # Rehang to correct parents and save nonempty comment to root
-                for i in xrange(1,len(nodes)):
+                for i in range(1,len(nodes)):
                     nodes[i].parent = nodes[parents[i]]
                 if len(comment):
                     zone.wild['comment'] = comment
@@ -110,7 +112,7 @@ class ReadCoNLLU(Block):
         if len(nodes)==1:
             doc.bundles.pop()
         else:
-            for i in xrange(1,len(nodes)):
+            for i in range(1,len(nodes)):
                 nodes[i].parent = nodes[parents[i]]
             if len(comment):
                 zone.wild['comment'] = comment

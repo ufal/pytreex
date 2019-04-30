@@ -37,8 +37,7 @@ class MarkSubject(Block):
                            if cand.formeme in ['n:1', 'drop'] and
                            not cand.functor.startswith('T')])
         # find all verbs and mark subjects for each of them
-        for tnode in filter(lambda t: re.match(r'^v.+(fin|rc)$', t.formeme),
-                            ttree.get_descendants()):
+        for tnode in [t for t in ttree.get_descendants() if re.match(r'^v.+(fin|rc)$', t.formeme)]:
             if tnode.lex_anode:
                 asubj = self.__find_subject(tnode.lex_anode, nominatives)
                 if asubj is not None:
@@ -53,10 +52,9 @@ class MarkSubject(Block):
                 + anode.get_echildren(following_only=True)
         # discard those which are not "proper" nominatives,
         # return if nothing remains
-        candidates = filter(lambda a: a in nominatives, candidates)
+        candidates = [a for a in candidates if a in nominatives]
         # filter copula verb candidates - demonstrative pronouns
         if anode.lemma == 'být':
-            candidates = filter(lambda a: a.lemma not in ['ten', 'tento'],
-                                candidates)
+            candidates = [a for a in candidates if a.lemma not in ['ten', 'tento']]
         # return the first (i.e. best) candidate, if available
         return candidates[0] if candidates else None

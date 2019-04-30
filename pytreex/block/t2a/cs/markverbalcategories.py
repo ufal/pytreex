@@ -4,6 +4,7 @@
 # A Treex block
 #
 from __future__ import unicode_literals
+from __future__ import print_function
 
 from pytreex.core.block import Block
 from pytreex.core.exception import LoadingException
@@ -36,7 +37,7 @@ class MarkVerbalCategories(Block):
             return
         if tnode.formeme.endswith('inf'):
             if not anode:
-                print tnode.id
+                print(tnode.id)
             self.resolve_infinitive(anode)
         elif tnode.sentmod == 'imper':
             self.resolve_imperative(tnode.lex_anode)

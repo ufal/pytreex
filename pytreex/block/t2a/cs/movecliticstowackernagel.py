@@ -36,7 +36,7 @@ class MoveCliticsToWackernagel(Block):
             clauses[anode.clause_number] = clause
             clause.append(anode)
         # Process all clauses
-        for clause in clauses.itervalues():
+        for clause in clauses.values():
             self.process_clause(clause)
 
     def process_clause(self, clause):

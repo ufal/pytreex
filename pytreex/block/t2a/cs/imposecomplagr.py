@@ -5,6 +5,7 @@
 #
 from __future__ import unicode_literals
 
+from builtins import next
 import re
 from pytreex.block.t2a.imposeagreement import ImposeAgreement
 

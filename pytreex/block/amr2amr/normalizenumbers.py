@@ -2,7 +2,10 @@
 # coding=utf-8
 
 from __future__ import unicode_literals
+from __future__ import division
 
+from builtins import str
+from past.utils import old_div
 from pytreex.core.block import Block
 from pytreex.core.exception import LoadingException
 from pytreex.core.log import log_info
@@ -40,7 +43,7 @@ class NormalizeNumbers(Block):
                     continue
                 val += num
                 self.rehang_children_and_remove(child)
-            amrnode.concept = unicode(val)
+            amrnode.concept = str(val)
             log_info('Separ: ' + amrnode.concept)
             return
         # / is "/"
@@ -48,7 +51,7 @@ class NormalizeNumbers(Block):
             children = amrnode.get_children(ordered=True)
             if len(children) == 2 and all([self.get_numeric_value(c) is not None for c in children]):
                 val = self.get_numeric_value(children[0]) / float(self.get_numeric_value(children[1]))
-                amrnode.concept = unicode(val)
+                amrnode.concept = str(val)
                 log_info('/: ' + amrnode.concept)
                 self.rehang_children_and_remove(children[0])
                 self.rehang_children_and_remove(children[1])
@@ -64,7 +67,7 @@ class NormalizeNumbers(Block):
                     self.rehang_children_and_remove(child)
                     log_info('Number child: ' + str(num))
             log_info('Number: ' + amrnode.concept)
-            amrnode.concept = unicode(val)
+            amrnode.concept = str(val)
     
     def get_numeric_value(self, amrnode):
         try:
@@ -100,14 +103,14 @@ class NormalizeNumbers(Block):
         'sto': 100, 'tisíc': 1000, 'milión': 1000000, 'milion': 1000000, 'miliarda': 1000000000,
 
         # fractions
-        'půl': 1/2, 'polovina': 1/2, 'třetina': 1/3, 'čtvrt': 1/4, 'čtvrtina': 1/4,
-        'pětina': 1/5, 'šestina': 1/6, 'sedmina': 1/7, 'osmina': 1/8, 'devítina': 1/9,
-        'desetina': 1/10, 'jedenáctina': 1/11, 'dvanáctina': 1/12, 'třináctina': 1/13,
-        'čtrnáctina': 1/14, 'patnáctina': 1/15, 'šestnáctina': 1/16, 'sedmnáctina': 1/17,
-        'osmnáctina': 1/18, 'devatenáctina': 1/19, 'dvacetina': 1/20,
-        'třicetina': 1/30, 'čtyřicetina': 1/40, 'padesátina': 1/50, 'šedesátina': 1/60,
-        'sedmdesátina': 1/70, 'osmdesátina': 1/80, 'devadesátina': 1/90,
-        'setina': 1/100, 'tisícina': 1/1000, 'milióntina': 1/1000000, 'miliontina': 1/1000000,
+        'půl': old_div(1,2), 'polovina': old_div(1,2), 'třetina': old_div(1,3), 'čtvrt': old_div(1,4), 'čtvrtina': old_div(1,4),
+        'pětina': old_div(1,5), 'šestina': old_div(1,6), 'sedmina': old_div(1,7), 'osmina': old_div(1,8), 'devítina': old_div(1,9),
+        'desetina': old_div(1,10), 'jedenáctina': old_div(1,11), 'dvanáctina': old_div(1,12), 'třináctina': old_div(1,13),
+        'čtrnáctina': old_div(1,14), 'patnáctina': old_div(1,15), 'šestnáctina': old_div(1,16), 'sedmnáctina': old_div(1,17),
+        'osmnáctina': old_div(1,18), 'devatenáctina': old_div(1,19), 'dvacetina': old_div(1,20),
+        'třicetina': old_div(1,30), 'čtyřicetina': old_div(1,40), 'padesátina': old_div(1,50), 'šedesátina': old_div(1,60),
+        'sedmdesátina': old_div(1,70), 'osmdesátina': old_div(1,80), 'devadesátina': old_div(1,90),
+        'setina': old_div(1,100), 'tisícina': old_div(1,1000), 'milióntina': old_div(1,1000000), 'miliontina': old_div(1,1000000),
 
         # other
         'tucet': 12, 'kopa': 60, 'veletucet': 144,

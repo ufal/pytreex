@@ -71,9 +71,7 @@ class ReverseNumberNounDependency(Block):
             return
         # check whether the switch should apply to all children
         tnoun = tnode.parent
-        if tnoun < tnode or filter(lambda tchild:
-                                   not self.__should_reverse(tchild.t_lemma),
-                                   tchildren):
+        if tnoun < tnode or [tchild for tchild in tchildren if not self.__should_reverse(tchild.t_lemma)]:
             return
         # check noun case
         noun_prep, noun_case = self.__get_prepcase(tnoun)

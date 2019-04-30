@@ -33,7 +33,7 @@ class Eval(Block):
         "Constructor, checking the argument values"
         Block.__init__(self, scenario, args)
         # just check if there is any valid argument in the argument dictionary 
-        if not [True for arg in args.keys() if arg in self.__class__.valid_args]:
+        if not [True for arg in list(args.keys()) if arg in self.__class__.valid_args]:
             raise LoadingException('No valid argument given (document, bundle, zone, X(tree|node)')        
     
         
@@ -42,7 +42,7 @@ class Eval(Block):
         code = self.args.get('document') or self.args.get('doc')
         if code is not None: 
             document = doc # provide the same variable under two names
-            exec code
+            exec(code)
         # process all bundles
         super(Eval, self).process_document(doc)
     
@@ -50,24 +50,24 @@ class Eval(Block):
     def process_bundle(self, bundle):
         "Process a document (execute code from the 'bundle' argument and dive deeper)"
         code = self.args.get('bundle')
-        if code is not None: exec code
+        if code is not None: exec(code)
         super(Eval, self).process_bundle(bundle)
         
     def process_zone(self, zone):
         "Process a zone (according to language and selector; execute code for the zone or X<tree|node>) arguments)"
         # code for the whole zone
         code = self.args.get('zone')
-        if code is not None: exec code
+        if code is not None: exec(code)
         # trees/nodes        
         for layer in ['a', 't', 'n', 'p']:
             # code for Xtree
             code = self.args.get(layer + 'tree')
             if code is not None:
-                exec layer + 'tree = zone.get_tree(layer)' + "\n" + code
+                exec(layer + 'tree = zone.get_tree(layer)' + "\n" + code)
             # code for Xnode
             code = self.args.get(layer + 'node')
             if code is not None:
                 for node in zone.get_tree(layer).get_descendants():
-                    exec layer + 'node = node' + "\n" + code
+                    exec(layer + 'node = node' + "\n" + code)
         
     

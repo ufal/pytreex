@@ -18,7 +18,7 @@ class SetGlobal(Block):
         Constructor, sets the arguments given to this block as global.
         """
         Block.__init__(self, scenario, args)
-        for arg, value in args.iteritems():
+        for arg, value in args.items():
             scenario.global_args[arg] = value
 
     def process_bundle(self, doc):
