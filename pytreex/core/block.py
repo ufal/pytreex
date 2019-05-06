@@ -4,6 +4,8 @@
 # Common ancestor for Treex blocks
 #
 from __future__ import unicode_literals
+from builtins import map
+from builtins import object
 from pytreex.core.exception import RuntimeException
 
 __author__ = "Ondřej Dušek"
@@ -72,7 +74,7 @@ class Block(object):
             nodes = zone.get_tree(layer).get_descendants(add_self=(layer == 'p'
                                                                    and True
                                                                    or False))
-            map(proc, nodes)
+            list(map(proc, nodes))
             return True
         # found process_Xtree - exec it
         proc(zone.get_tree(layer))

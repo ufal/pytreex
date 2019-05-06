@@ -7,6 +7,8 @@
 from __future__ import absolute_import
 from __future__ import unicode_literals
 
+from builtins import map
+from builtins import str
 from pytreex.block.write.basewriter import BaseWriter
 from pytreex.core.util import file_stream
 

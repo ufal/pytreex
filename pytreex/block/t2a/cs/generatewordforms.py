@@ -5,6 +5,9 @@
 #
 from __future__ import unicode_literals
 
+from builtins import zip
+from builtins import str
+from builtins import range
 from pytreex.core.block import Block
 from pytreex.core.exception import LoadingException
 from pytreex.tool.ml.model import Model
@@ -90,7 +93,7 @@ class GenerateWordForms(Block):
         feats['Tag_Cas-Gen'] = cas + gen
         feats['Tag_Cas-Num'] = cas + num
         # add suffixes of length 1 - 8 (inclusive)
-        for suff_len in xrange(1, 9):
+        for suff_len in range(1, 9):
             feats['LemmaSuff_' + str(suff_len)] = anode.lemma[-suff_len:]
         return feats
 

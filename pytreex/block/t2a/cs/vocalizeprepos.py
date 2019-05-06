@@ -3,6 +3,7 @@
 #
 from __future__ import unicode_literals
 
+from builtins import zip
 from pytreex.core.block import Block
 from pytreex.core.exception import LoadingException
 import re

@@ -3,6 +3,9 @@
 #
 #
 from __future__ import unicode_literals
+from builtins import str
+from builtins import zip
+from builtins import object
 import os
 
 
@@ -297,12 +300,12 @@ class Model(AbstractModel):
             data = data.as_dict(select_attrib=self.select_attr,
                                 mask_attrib=self.class_attr)
         else:
-            data = [{key: val for key, val in inst.items()
+            data = [{key: val for key, val in list(inst.items())
                      if key != self.class_attr and key in self.select_attr}
                     for inst in data]
         # pre-filter attributes if filter_attr is set
         if self.filter_attr:
-            data = [{key: val for key, val in inst.items()
+            data = [{key: val for key, val in list(inst.items())
                      if self.filter_attr(key, val)} for inst in data]
         if not self.vectorizer_trained:
             self.vectorizer.fit(data)
@@ -331,7 +334,7 @@ class Model(AbstractModel):
         """
         if key in state and hasattr(state[key], '__call__'):
             try:
-                code = state[key].func_code
+                code = state[key].__code__
                 state[key] = marshal.dumps(code)
             except (AttributeError, ValueError):
                 # try to use original version if marshaling fails
@@ -404,7 +407,7 @@ class SplitModel(AbstractModel):
         jobs = []
         model_files = {}
         # save training files and create training jobs
-        for key, subset in train_split.iteritems():
+        for key, subset in train_split.items():
             fn = re.sub(r'(.arff(.gz)?)?$', '-' + key + '.arff.gz', train_file)
             fn = os.path.join(work_dir, os.path.basename(fn))
             subset.save_to_arff(fn, encoding)
@@ -422,7 +425,7 @@ class SplitModel(AbstractModel):
             job.wait()
         # load all models
         log_info('Training complete. Assembling model files...')
-        for key, model_file in model_files.iteritems():
+        for key, model_file in model_files.items():
             self.models[key] = Model.load_from_file(model_file)
         self.trained = True
         log_info('Training done.')

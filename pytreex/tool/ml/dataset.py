@@ -6,6 +6,12 @@ Data set representation with ARFF input possibility.
 """
 
 from __future__ import unicode_literals
+from __future__ import print_function
+from builtins import zip
+from builtins import str
+from builtins import range
+from past.builtins import basestring
+from builtins import object
 import re
 import numpy as np
 import scipy.sparse as sp
@@ -225,7 +231,7 @@ class DataSet(object):
         for inst in self.data:
             # find relevant data (different for sparse and dense)
             if self.is_sparse:
-                num_vals = zip(inst.rows[0], inst.data[0])
+                num_vals = list(zip(inst.rows[0], inst.data[0]))
             else:
                 num_vals = enumerate(inst)
             # add the data to a dictionary which is appended to the list
@@ -321,17 +327,17 @@ class DataSet(object):
         # open the file
         fh = file_stream(filename, 'w', encoding)
         # print the relation name
-        print >> fh, '@relation ' + (self.relation_name
+        print('@relation ' + (self.relation_name
                                      if self.relation_name is not None
-                                     else '<noname>')
+                                     else '<noname>'), file=fh)
         # print the list of attributes
         for attrib in self.attribs:
-            print >> fh, '@attribute ' + attrib.name + ' ' + \
-                    attrib.get_arff_type()
+            print('@attribute ' + attrib.name + ' ' + \
+                    attrib.get_arff_type(), file=fh)
         # print instances
-        print >> fh, '@data'
+        print('@data', file=fh)
         for inst, weight in zip(self.data, self.inst_weights):
-            print >> fh, self.__get_arff_line(inst, weight)
+            print(self.__get_arff_line(inst, weight), file=fh)
 
     def load_from_matrix(self, attr_list, matrix):
         """
@@ -351,9 +357,9 @@ class DataSet(object):
         # store data
         if self.is_sparse:
             self.data = [matrix[line, :].tolil()
-                         for line in xrange(matrix.shape[0])]
+                         for line in range(matrix.shape[0])]
         else:
-            self.data = [matrix[line] for line in xrange(matrix.shape[0])]
+            self.data = [matrix[line] for line in range(matrix.shape[0])]
 
     def load_from_vect(self, attrib, vect):
         """
@@ -383,7 +389,7 @@ class DataSet(object):
         # prepare 'instances' with stringy values, prepare attributes
         for dict_inst in data:
             inst = [None] * len(self.attribs)
-            for attr_name, val in dict_inst.iteritems():
+            for attr_name, val in dict_inst.items():
                 try:
                     attr = self.get_attrib(attr_name)
                 # attribute does not exist, create it
@@ -484,7 +490,7 @@ class DataSet(object):
             # cache column shifting (i.e. number of deleted to the left)
             # and new indexes for the separated data
             shifts = {idx: len([a for a in attribs if a < idx])
-                      for idx in xrange(len(self.attribs))}
+                      for idx in range(len(self.attribs))}
             for sep_idx, old_idx in enumerate(attribs):
                 shifts[old_idx] = old_idx - sep_idx
             # separate data in individual instances
@@ -537,7 +543,7 @@ class DataSet(object):
         if self.is_sparse:
             # cache column shifting (i.e. number of deleted to the left)
             lshifts = {idx: len([a for a in attribs if a < idx])
-                       for idx in xrange(len(self.attribs))}
+                       for idx in range(len(self.attribs))}
             for inst in self.data:
                 # find sparse indexes to remove
                 rem = [idx for idx, col in enumerate(inst.rows[0])
@@ -682,7 +688,7 @@ class DataSet(object):
             indexes = args[0]
         else:
             indexes = slice(*args)
-        if kwargs.keys() not in [[], ['copy']]:
+        if list(kwargs.keys()) not in [[], ['copy']]:
             raise TypeError('Unsupported keyword arguments')
         keep_copy = kwargs.get('copy', True)
         # copy metadata
@@ -692,18 +698,18 @@ class DataSet(object):
         # copy/move instances
         if keep_copy:
             subset.data = [copy.deepcopy(self.data[idx])
-                           for idx in xrange(*indexes.indices(len(self)))]
+                           for idx in range(*indexes.indices(len(self)))]
             subset.inst_weights = [self.inst_weights[idx] for idx
-                                   in xrange(*indexes.indices(len(self)))]
+                                   in range(*indexes.indices(len(self)))]
         else:
-            idxs = range(*indexes.indices(len(self)))
+            idxs = list(range(*indexes.indices(len(self))))
             subset.data = [self.data[idx] for idx in idxs]
             subset.inst_weights = [self.inst_weights[idx] for idx in idxs]
             idxs_set = set(idxs)
-            self.data = [self.data[idx] for idx in xrange(len(self))
+            self.data = [self.data[idx] for idx in range(len(self))
                          if not idx in idxs_set]
             self.inst_weights = [self.inst_weights[idx] for idx
-                                 in xrange(len(self)) if not idx in idxs_set]
+                                 in range(len(self)) if not idx in idxs_set]
         return subset
 
     def filter(self, filter_func, keep_copy=True):
@@ -720,7 +726,7 @@ class DataSet(object):
         """
         filtered = self.__metadata_copy('_filtered')
         filt_res = [filter_func(idx, self.instance(idx))
-                    for idx in xrange(len(self))]
+                    for idx in range(len(self))]
         true_idxs = [idx for idx, res in enumerate(filt_res) if res]
         if keep_copy:
             filtered.data = [copy.deepcopy(self.data[idx])
@@ -754,7 +760,7 @@ class DataSet(object):
         the original data set.
         """
         ret = {}
-        for idx in xrange(len(self)):
+        for idx in range(len(self)):
             key = split_func(idx, self.instance(idx))
             if not key in ret:
                 ret[key] = self.__metadata_copy('_split_' + key)
@@ -1036,7 +1042,7 @@ class DataSetIterator(object):
     def __iter__(self):
         return self
 
-    def next(self):
+    def __next__(self):
         """
         Move to the next instance.
         """

@@ -4,6 +4,8 @@
 # Classes related to Treex documents, bundles and zones
 #
 from __future__ import unicode_literals
+from builtins import str
+from builtins import object
 from copy import copy
 from pytreex.core.exception import RuntimeException
 import pytreex.core.node
@@ -38,7 +40,7 @@ class Document(object):
         """
         self.__index[node.id] = node
         refs = node.get_referenced_ids()
-        for ref_type, value in refs.iteritems():
+        for ref_type, value in refs.items():
             self.index_backref(ref_type, node.id, value)
 
     def remove_node(self, node_id):
@@ -147,7 +149,7 @@ class Bundle(object):
         """\
         Return all zones contained in this bundle.
         """
-        return self.__zones.values()
+        return list(self.__zones.values())
 
     def get_zone(self, language, selector):
         """\

@@ -6,7 +6,6 @@ import codecs
 
 setup(
     name='PyTreex',
-    version='0.1dev',
     author='Ondrej Dusek',
     packages=['pytreex', 'pytreex.core', 'pytreex.tool', 'pytreex.tool.ml',
               'pytreex.tool.lexicon', 'pytreex.block', 'pytreex.block.t2a',

@@ -71,9 +71,9 @@ class YAML(BaseWriter):
             value = node.get_attr(attr)
             # write all non-nulls, but skip empty dictionaries and lists
             if value is not None and \
-                    ((type(value) != types.DictType and
-                      type(value) != types.ListType and
-                      type(value) != types.BooleanType) or value):
+                    ((type(value) != dict and
+                      type(value) != list and
+                      type(value) != bool) or value):
                 data[attr] = value
         if isinstance(node, AMR) and not node.is_root:
             node.data_to_tamr(data)
