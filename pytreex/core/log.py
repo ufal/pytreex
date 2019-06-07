@@ -7,25 +7,28 @@ __date__ = "2012"
 
 import sys
 import codecs
-from logging import basicConfig, info, warn, INFO
+import logging
 
 
-# configure logging
+LOG_NAME = 'PyTreex'
 LOGFORMAT = '%(asctime)-15s %(message)s'
-basicConfig(format=LOGFORMAT, stream=codecs.getwriter('utf-8')(sys.stderr),
-            level=INFO)
+
+logger = logging.getLogger(LOG_NAME)
+handler = logging.StreamHandler(sys.stderr)
+handler.setFormatter(logging.Formatter(LOGFORMAT))
+logger.addHandler(handler)
 
 
 def log_info(message):
     "Print an information message"
-    info('PYTREEX-INFO: ' + message)
+    logging.getLogger(LOG_NAME).info('PYTREEX-INFO: ' + message)
 
 
 def log_warn(message):
     "Print a warning message"
-    warn('PYTREEX-WARN: ' + message)
+    logging.getLogger(LOG_NAME).warn('PYTREEX-WARN: ' + message)
 
 def log_fatal(message, exc=Exception()):
     "Print a fatal error message, then raise exception"
-    warn('PYTREEX-FATAL: ' + message)
+    logging.getLogger(LOG_NAME).warn('PYTREEX-FATAL: ' + message)
     raise exc
