@@ -41,7 +41,7 @@ def file_stream(filename, mode='r', encoding='UTF-8'):
     handling GZip. Depending on mode, open an input or output stream.
     """
     # open file
-    if isinstance(filename, (file, IOBase, StreamReader, StreamWriter)):
+    if isinstance(filename, (IOBase, StreamReader, StreamWriter)):
         fh = filename
     elif filename.endswith('.gz'):
         fh = gzip.open(filename, mode)
