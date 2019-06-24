@@ -32,7 +32,7 @@ class YAML(BaseWriter):
             data.append(self.serialize_bundle(bundle))
         out = file_stream(self.get_output_file_name(doc), 'w', encoding=None)
         out.write(yaml.safe_dump(data, allow_unicode=True,
-                                 explicit_start=True))
+                                 explicit_start=True).encode('utf-8'))
         out.close()
 
     def serialize_bundle(self, bundle):
