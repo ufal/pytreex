@@ -5,6 +5,7 @@
 #
 
 from __future__ import unicode_literals
+from future.utils import python_2_unicode_compatible
 from builtins import zip
 from builtins import next
 from builtins import str
@@ -24,6 +25,7 @@ __author__ = "Ondřej Dušek"
 __date__ = "2012"
 
 
+@python_2_unicode_compatible
 class Node(object):
     "Representing a node in a tree (recursively)"
 
@@ -997,7 +999,7 @@ class T(Node, Ordered, EffectiveRelations, InClause):
         and parent orders of all nodes in the tree (ordered)."""
         return hash(str(self))
 
-    def __unicode__(self):
+    def __str__(self):
         desc = self.get_descendants(add_self=1, ordered=1)
         return ' '.join(['%d|%d|%s|%s' % (n.ord if n.ord is not None else -1,
                                           n.parent.ord if n.parent else -1,
@@ -1005,7 +1007,7 @@ class T(Node, Ordered, EffectiveRelations, InClause):
                                           n.formeme)
                          for n in desc])
 
-    def __str__(self):
+    def __bytes__(self):
         return str(self).encode('UTF-8', 'replace')
 
 
